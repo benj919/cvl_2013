@@ -17,13 +17,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 public class nftActivity extends Activity implements CvCameraViewListener2 {
-    private static final String    TAG = "OCVSample::Activity";
+    private static final String    TAG = "OCVnft::Activity";
 
     private static final int       VIEW_MODE_FT_SELECTION     = 0;
-    private static final int       VIEW_MODE_GRAY     = 1;
+    private static final int       VIEW_MODE_CAPTURE     = 1;
     private static final int       VIEW_MODE_CANNY    = 2;
     private static final int       VIEW_MODE_FEATURES = 5;
     
@@ -43,7 +42,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
     private MenuItem[] 			   mFeatureMenuItems;
     private SubMenu 			   mFeatureMenu;
     
-    private MenuItem               mItemPreviewGray;
+    private MenuItem               mItemPreviewCapture;
     private MenuItem               mItemPreviewCanny;
     private MenuItem               mItemPreviewFeatures;
 
@@ -80,10 +79,10 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(R.layout.tutorial2_surface_view);
+        setContentView(R.layout.nft_surface_view);
 
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial2_activity_surface_view);
-        mOpenCvCameraView.setMaxFrameSize(640, 480);
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.nft_activity_surface_view);
+        mOpenCvCameraView.setMaxFrameSize(720, 480);
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
@@ -99,7 +98,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         mFeatureMenuItems[3] = mFeatureMenu.add(2, FEATURE_STAR, Menu.NONE, "STAR");
         mFeatureMenuItems[4] = mFeatureMenu.add(2, FEATURE_MSER, Menu.NONE, "MSER");
         
-        mItemPreviewGray = menu.add("Capture");
+        mItemPreviewCapture = menu.add("Capture");
         mItemPreviewCanny = menu.add("Canny");
         mItemPreviewFeatures = menu.add("Find features");
         return true;
@@ -151,7 +150,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
             Imgproc.Canny(inputFrame.gray(), mIntermediateMat, 80, 100);
             Imgproc.cvtColor(mIntermediateMat, mRgba, Imgproc.COLOR_GRAY2RGBA, 4);
             break;
-        case VIEW_MODE_GRAY:
+        case VIEW_MODE_CAPTURE:
             // input frame has gray scale format
             CaptureFrame(0);
             break;
@@ -173,7 +172,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
             selected_feature = item.getItemId();
             SetFeature(selected_feature);
             mViewMode = VIEW_MODE_FT_SELECTION;
-        } else if (item == mItemPreviewGray) {
+        } else if (item == mItemPreviewCapture) {
             mViewMode = VIEW_MODE_FEATURES;
         } else if (item == mItemPreviewCanny) {
             mViewMode = VIEW_MODE_CANNY;
@@ -184,7 +183,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         return true;
     }
 
-    public native void FindFeatures(long matAddrGr, long matAddrRgba);
     public native void SetFeature(int feature_idx);
+    public native void FindFeatures(long matAddrGray, long matAddrRgba);
     public native void CaptureFrame(int capture_idx);
 }

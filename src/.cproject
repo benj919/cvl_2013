@@ -69,6 +69,7 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/OpenCV Tutorial 2 - Mixed Processing"/>
+		<resource resourceType="PROJECT" workspacePath="/Natural Feature Tracking"/>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
