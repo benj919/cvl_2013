@@ -4,6 +4,10 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <vector>
 
+#include<android/log.h>
+
+#include "detection.hpp"
+
 using namespace std;
 int selected_feature = 0;
 
@@ -12,9 +16,13 @@ bool capture_frame = false;
 int capture_idx = 0;
 vector<vector<cv::KeyPoint> > initial_keypoints;
 vector<cv::Mat> initial_descriptors;
+detection* detector;
 
 extern "C" {
+
 // Function definitions for the compiler to recognize them
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject);
+
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_SetFeature(JNIEnv*, jobject, jint feature_idx);
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_FindFeatures(JNIEnv*, jobject, jlong matAddrGray, jlong matAddrRgba);
@@ -26,41 +34,28 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_FindFeatures(JNIEnv*, jobject, j
 {
     cv::Mat& mGr  = *(cv::Mat*)matAddrGray;
     cv::Mat& mRgb = *(cv::Mat*)matAddrRgba;
-    vector<cv::KeyPoint> v_new;
-    cv::Mat descriptors_new;
-    std::vector<cv::DMatch> matches;
-
-    //FastFeatureDetector detector(50);
-    cv::OrbFeatureDetector  detector(250);
-    cv::OrbDescriptorExtractor extractor;
-    cv::BFMatcher bf_matcher(cv::NORM_HAMMING, true);
-
-    detector.detect(mGr, v_new);
-    detector.compute(mRgb, v_new, descriptors_new);
+    std::vector<cv::KeyPoint> new_keypoints;
 
     if (capture_frame){
-    	initial_keypoints.push_back(v_new);
-    	initial_descriptors.push_back(descriptors_new);
+    	detector->extract_and_add_raw_features(mGr);
+    	if(detector->raw_descriptors.size() == 2){
+    		detector->setup_initial_features();
+    	}
     	capture_frame = false;
     	return;
     }
 
-    if(initial_descriptors.empty()){
-    	return;
-    }
+    new_keypoints = detector->track(mGr);
 
-    bf_matcher.match( initial_descriptors[0], descriptors_new, matches );
-
-    for( unsigned int i = 0; i < matches.size(); i++ )
+    for( unsigned int i = 0; i < new_keypoints.size(); i++ )
     {
-    	cv::DMatch d = matches[i];
-        const cv::KeyPoint& kp_new = v_new[d.trainIdx];
-        const cv::KeyPoint& kp_old = initial_keypoints[0][d.queryIdx];
-        if(abs(kp_new.pt.x - kp_old.pt.x) < 20 and abs(kp_new.pt.y - kp_old.pt.y) < 20 and d.distance < 0.5){
-        	cv::circle(mRgb, cv::Point(kp_new.pt.x, kp_new.pt.y), 10, cv::Scalar(0,0,255,100));
-        	cv::line(mRgb, cv::Point(kp_old.pt.x, kp_old.pt.y), cv::Point(kp_new.pt.x, kp_new.pt.y),cv::Scalar(0,255,0,255));
-        }
+    	cv::KeyPoint p = new_keypoints[i];
+    	cv::circle(mRgb, cv::Point(p.pt.x, p.pt.y), 10, cv::Scalar(0,0,255,100));
     }
+}
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject){
+	// setup detection object/"framework"
+	detector = new detection();
 }
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_SetFeature(JNIEnv*, jobject, jint feature_idx){

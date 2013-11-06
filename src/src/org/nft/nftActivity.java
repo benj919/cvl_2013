@@ -55,9 +55,9 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
                 case LoaderCallbackInterface.SUCCESS:
                 {
                     Log.i(TAG, "OpenCV loaded successfully");
-
                     // Load native library after(!) OpenCV initialization
                     System.loadLibrary("mixed_sample");
+                    InitializeDetector();
                     mOpenCvCameraView.enableView();
                 } break;
                 default:
@@ -84,6 +84,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.nft_activity_surface_view);
         mOpenCvCameraView.setMaxFrameSize(720, 480);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        
     }
 
     @Override
@@ -153,6 +154,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         case VIEW_MODE_CAPTURE:
             // input frame has gray scale format
             CaptureFrame(0);
+            mRgba = inputFrame.rgba();
             break;
         case VIEW_MODE_FEATURES:
             // input frame has RGBA format
@@ -173,7 +175,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
             SetFeature(selected_feature);
             mViewMode = VIEW_MODE_FT_SELECTION;
         } else if (item == mItemPreviewCapture) {
-            mViewMode = VIEW_MODE_FEATURES;
+            mViewMode = VIEW_MODE_FT_SELECTION; //VIEW_MODE_FEATURES;
         } else if (item == mItemPreviewCanny) {
             mViewMode = VIEW_MODE_CANNY;
         } else if (item == mItemPreviewFeatures) {
@@ -183,6 +185,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         return true;
     }
 
+    public native void InitializeDetector();
     public native void SetFeature(int feature_idx);
     public native void FindFeatures(long matAddrGray, long matAddrRgba);
     public native void CaptureFrame(int capture_idx);
