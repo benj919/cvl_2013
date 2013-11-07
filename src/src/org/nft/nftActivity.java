@@ -23,7 +23,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
 
     private static final int       VIEW_MODE_FT_SELECTION     = 0;
     private static final int       VIEW_MODE_CAPTURE     = 1;
-    private static final int       VIEW_MODE_AQUISITION    = 2;
+    private static final int       VIEW_MODE_INFO    = 2;
     private static final int       VIEW_MODE_FEATURES = 5;
     
     private int 				   selected_feature;
@@ -100,7 +100,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         mFeatureMenuItems[4] = mFeatureMenu.add(2, FEATURE_MSER, Menu.NONE, "MSER");
         
         mItemPreviewCapture = menu.add("Capture");
-        mItemPreviewCanny = menu.add("Canny");
+        mItemPreviewCanny = menu.add("Info");
         mItemPreviewFeatures = menu.add("Find features");
         return true;
     }
@@ -145,7 +145,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
             // input frame has RBGA format
             mRgba = inputFrame.rgba();
             break;
-        case VIEW_MODE_AQUISITION:
+        case VIEW_MODE_INFO:
             // input frame has gray scale format
             mRgba = inputFrame.rgba();
             Imgproc.Canny(inputFrame.gray(), mIntermediateMat, 80, 100);
@@ -177,7 +177,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         } else if (item == mItemPreviewCapture) {
             mViewMode = VIEW_MODE_FT_SELECTION; //VIEW_MODE_FEATURES;
         } else if (item == mItemPreviewCanny) {
-            mViewMode = VIEW_MODE_AQUISITION;
+            mViewMode = VIEW_MODE_INFO;
         } else if (item == mItemPreviewFeatures) {
             mViewMode = VIEW_MODE_FEATURES;
         }
