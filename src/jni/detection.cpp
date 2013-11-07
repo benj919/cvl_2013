@@ -23,11 +23,17 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 	// call setup_initial_features to calculate the initial set of features from the raw collection
 	std::vector<cv::KeyPoint> keypoints;
 	cv::Mat descriptors;
+	cv::Mat mask = cv::Mat::zeros(img.size(), CV_8UC1);
+	cv::Mat roi(mask, cv::Rect(240,160,480,320));
+	roi = cv::Scalar(255,255,255);
 
-	detector.detect(img, keypoints);
+	detector.detect(img, keypoints, mask);
 	detector.compute(img, keypoints, descriptors);
 
 	raw_descriptors.push_back(descriptors);
+
+	// for debugging
+	setup_initial_features();
 };
 
 void detection::setup_initial_features(){
@@ -62,12 +68,19 @@ void detection::setup_initial_features(){
 
 std::vector<cv::KeyPoint> detection::track(cv::Mat& img){
 	// try to find and track the initial features in the given image
+
 	std::vector<cv::KeyPoint> keypoints_new, result;
 	cv::Mat descriptors_new;
 	std::vector<std::vector<cv::DMatch> > matches;
 
 	detector.detect(img, keypoints_new);
 	detector.compute(img, keypoints_new, descriptors_new);
+
+	if(keypoints_new.size() == 0 or initial_keypoints.size() == 0){
+		// no features??
+		show_features(img, keypoints_new);
+		return keypoints_new;
+	}
 
 	matcher.knnMatch( initial_descriptors[0], descriptors_new, matches, 2);
 
@@ -86,3 +99,12 @@ void detection::add_target_rectangle(cv::Mat& img, cv::Point2i top_left, cv::Poi
 	//add targeting rectangle for initial acquisition
 	cv::rectangle(img, top_left, bottom_right, cv::Scalar(100,100,100,100), 2);
 };
+
+void detection::show_features(cv::Mat& img, std::vector<cv::KeyPoint>& points){
+	// draw the points onto the image img
+	for(int i = 0; i < points.size(); i++){
+		cv::KeyPoint& tmp = points[i];
+		cv::circle(img, cv::Point(tmp.pt.x, tmp.pt.y), 5, cv::Scalar(0,125,0,100));
+	}
+
+}

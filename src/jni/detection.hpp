@@ -30,4 +30,7 @@ public:
 
 	void add_target_rectangle(cv::Mat& img, cv::Point2i top_left, cv::Point2i bottom_right);
 	// for aquiring the raw features: the desired object to track should be in the center of the frame
+
+	void show_features(cv::Mat& img, std::vector<cv::KeyPoint>& points);
+	// displays some features in the image
 };

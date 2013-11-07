@@ -38,20 +38,20 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_FindFeatures(JNIEnv*, jobject, j
 
     if (capture_frame){
     	detector->extract_and_add_raw_features(mGr);
-    	if(detector->raw_descriptors.size() == 2){
-    		detector->setup_initial_features();
-    	}
+//    	if(detector->raw_descriptors.size() == 2){
+//    		detector->setup_initial_features();
+//    	}
     	capture_frame = false;
     	return;
     }
 
     new_keypoints = detector->track(mGr);
 
-    for( unsigned int i = 0; i < new_keypoints.size(); i++ )
-    {
-    	cv::KeyPoint p = new_keypoints[i];
-    	cv::circle(mRgb, cv::Point(p.pt.x, p.pt.y), 10, cv::Scalar(0,0,255,100));
-    }
+//    for( unsigned int i = 0; i < new_keypoints.size(); i++ )
+//    {
+//    	cv::KeyPoint p = new_keypoints[i];
+//    	cv::circle(mRgb, cv::Point(p.pt.x, p.pt.y), 10, cv::Scalar(0,0,255,100));
+//    }
 }
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject){
 	// setup detection object/"framework"
