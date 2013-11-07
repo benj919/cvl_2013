@@ -12,25 +12,30 @@ using namespace std;
 int selected_feature = 0;
 
 // initial object capture
+bool object_aquisition = false;
 bool capture_frame = false;
+bool show_status_info = false;
+bool tracking = false;
 int capture_idx = 0;
-vector<vector<cv::KeyPoint> > initial_keypoints;
-vector<cv::Mat> initial_descriptors;
 detection* detector;
 
 extern "C" {
 
 // Function definitions for the compiler to recognize them
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ObjectAquisition(JNIEnv*, jobject, jboolean aquisition);
+
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowStatusInfo(JNIEnv*, jobject, jboolean display);
+
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject);
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_SetFeature(JNIEnv*, jobject, jint feature_idx);
 
-JNIEXPORT void JNICALL Java_org_nft_nftActivity_FindFeatures(JNIEnv*, jobject, jlong matAddrGray, jlong matAddrRgba);
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ProcessFrame(JNIEnv*, jobject, jlong matAddrGray, jlong matAddrRgba);
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_CaptureFrame(JNIEnv*, jobject, jint capture_idx);
 
 // Function implementations
-JNIEXPORT void JNICALL Java_org_nft_nftActivity_FindFeatures(JNIEnv*, jobject, jlong matAddrGray, jlong matAddrRgba)
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ProcessFrame(JNIEnv*, jobject, jlong matAddrGray, jlong matAddrRgba)
 {
     cv::Mat& mGr  = *(cv::Mat*)matAddrGray;
     cv::Mat& mRgb = *(cv::Mat*)matAddrRgba;
@@ -47,11 +52,8 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_FindFeatures(JNIEnv*, jobject, j
 
     new_keypoints = detector->track(mGr);
 
-//    for( unsigned int i = 0; i < new_keypoints.size(); i++ )
-//    {
-//    	cv::KeyPoint p = new_keypoints[i];
-//    	cv::circle(mRgb, cv::Point(p.pt.x, p.pt.y), 10, cv::Scalar(0,0,255,100));
-//    }
+	detector->show_features(mRgb, new_keypoints);
+	detector->overlay_status_info(mRgb);
 }
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject){
 	// setup detection object/"framework"
@@ -64,6 +66,14 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_SetFeature(JNIEnv*, jobject, jin
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_CaptureFrame(JNIEnv*, jobject, jint capture_idx){
 	capture_frame = true;
+}
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowStatusInfo(JNIEnv*, jobject, jboolean display){
+	show_status_info = display;
+}
+
+
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ObjectAquisition(JNIEnv*, jobject, jboolean aquisition){
+	object_aquisition = aquisition;
 }
 
 }

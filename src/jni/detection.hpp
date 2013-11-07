@@ -33,4 +33,7 @@ public:
 
 	void show_features(cv::Mat& img, std::vector<cv::KeyPoint>& points);
 	// displays some features in the image
+
+	void overlay_status_info(cv::Mat& img);
+	// overlay image with status info (number of key frames, number of features etc...)
 };

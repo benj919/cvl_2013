@@ -23,7 +23,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
 
     private static final int       VIEW_MODE_FT_SELECTION     = 0;
     private static final int       VIEW_MODE_CAPTURE     = 1;
-    private static final int       VIEW_MODE_CANNY    = 2;
+    private static final int       VIEW_MODE_AQUISITION    = 2;
     private static final int       VIEW_MODE_FEATURES = 5;
     
     private int 				   selected_feature;
@@ -145,7 +145,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
             // input frame has RBGA format
             mRgba = inputFrame.rgba();
             break;
-        case VIEW_MODE_CANNY:
+        case VIEW_MODE_AQUISITION:
             // input frame has gray scale format
             mRgba = inputFrame.rgba();
             Imgproc.Canny(inputFrame.gray(), mIntermediateMat, 80, 100);
@@ -160,7 +160,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
             // input frame has RGBA format
             mRgba = inputFrame.rgba();
             mGray = inputFrame.gray();
-            FindFeatures(mGray.getNativeObjAddr(), mRgba.getNativeObjAddr());
+            ProcessFrame(mGray.getNativeObjAddr(), mRgba.getNativeObjAddr());
             break;
         }
 
@@ -177,16 +177,17 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         } else if (item == mItemPreviewCapture) {
             mViewMode = VIEW_MODE_FT_SELECTION; //VIEW_MODE_FEATURES;
         } else if (item == mItemPreviewCanny) {
-            mViewMode = VIEW_MODE_CANNY;
+            mViewMode = VIEW_MODE_AQUISITION;
         } else if (item == mItemPreviewFeatures) {
             mViewMode = VIEW_MODE_FEATURES;
         }
 
         return true;
     }
-
+    public native void ObjectAquisition(boolean aquisition);
+    public native void ShowStatusInfo(boolean display);
     public native void InitializeDetector();
     public native void SetFeature(int feature_idx);
-    public native void FindFeatures(long matAddrGray, long matAddrRgba);
+    public native void ProcessFrame(long matAddrGray, long matAddrRgba);
     public native void CaptureFrame(int capture_idx);
 }

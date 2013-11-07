@@ -78,7 +78,6 @@ std::vector<cv::KeyPoint> detection::track(cv::Mat& img){
 
 	if(keypoints_new.size() == 0 or initial_keypoints.size() == 0){
 		// no features??
-		show_features(img, keypoints_new);
 		return keypoints_new;
 	}
 
@@ -106,5 +105,8 @@ void detection::show_features(cv::Mat& img, std::vector<cv::KeyPoint>& points){
 		cv::KeyPoint& tmp = points[i];
 		cv::circle(img, cv::Point(tmp.pt.x, tmp.pt.y), 5, cv::Scalar(0,125,0,100));
 	}
+};
 
-}
+void detection::overlay_status_info(cv::Mat& img){
+	cv::putText(img, " Number of features: " , cv::Point2i(50,240), CV_FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255));
+};
