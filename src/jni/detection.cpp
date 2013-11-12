@@ -33,7 +33,7 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 	raw_descriptors.push_back(descriptors);
 
 	// for debugging
-	//setup_initial_features();
+	setup_initial_features();
 };
 
 void detection::setup_initial_features(){
