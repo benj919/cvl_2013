@@ -24,7 +24,7 @@ extern "C" {
 // Function definitions for the compiler to recognize them
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_ObjectAquisition(JNIEnv*, jobject, jboolean aquisition);
 
-JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowStatusInfo(JNIEnv*, jobject, jboolean display);
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_TogleStatusInfo(JNIEnv*, jobject);
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject);
 
@@ -53,7 +53,9 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_ProcessFrame(JNIEnv*, jobject, j
     new_keypoints = detector->track(mGr);
 
 	detector->show_features(mRgb, new_keypoints);
-	detector->overlay_status_info(mRgb);
+	if(show_status_info){
+		detector->overlay_status_info(mRgb);
+	}
 }
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject){
 	// setup detection object/"framework"
@@ -67,8 +69,8 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_SetFeature(JNIEnv*, jobject, jin
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_CaptureFrame(JNIEnv*, jobject, jint capture_idx){
 	capture_frame = true;
 }
-JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowStatusInfo(JNIEnv*, jobject, jboolean display){
-	show_status_info = display;
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_TogleStatusInfo(JNIEnv*, jobject){
+	show_status_info = !show_status_info;
 }
 
 

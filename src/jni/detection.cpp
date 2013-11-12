@@ -25,7 +25,7 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 	cv::Mat descriptors;
 	cv::Mat mask = cv::Mat::zeros(img.size(), CV_8UC1);
 	cv::Mat roi(mask, cv::Rect(240,160,480,320));
-	roi = cv::Scalar(255,255,255);
+	roi = cv::Scalar(255);
 
 	detector.detect(img, keypoints, mask);
 	detector.compute(img, keypoints, descriptors);
@@ -108,5 +108,9 @@ void detection::show_features(cv::Mat& img, std::vector<cv::KeyPoint>& points){
 };
 
 void detection::overlay_status_info(cv::Mat& img){
-	cv::putText(img, " Number of features: " , cv::Point2i(50,240), CV_FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255));
+	//cv::Mat tmp = initial_descriptors[0];
+	std::stringstream fu;
+	//cv::Size_<uint> s = tmp.size();
+	fu << "# init ft: " << raw_descriptors.size(); //<< s.height;
+	cv::putText(img, fu.str() , cv::Point2i(50,460), CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0)); //"# init ft: %i", initial_descriptors.size()
 };

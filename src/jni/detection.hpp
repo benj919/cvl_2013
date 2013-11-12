@@ -11,6 +11,7 @@ public:
     std::vector<cv::KeyPoint> initial_keypoints;
     std::vector<cv::Mat> initial_descriptors;
     std::vector<cv::Mat> raw_descriptors;
+    cv::Point2i previous_location;
 
 	// init & destructor
 	detection();

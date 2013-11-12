@@ -148,13 +148,14 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         case VIEW_MODE_INFO:
             // input frame has gray scale format
             mRgba = inputFrame.rgba();
-            Imgproc.Canny(inputFrame.gray(), mIntermediateMat, 80, 100);
-            Imgproc.cvtColor(mIntermediateMat, mRgba, Imgproc.COLOR_GRAY2RGBA, 4);
+            mViewMode = VIEW_MODE_FEATURES;
+            TogleStatusInfo();
             break;
         case VIEW_MODE_CAPTURE:
             // input frame has gray scale format
             CaptureFrame(0);
             mRgba = inputFrame.rgba();
+            mViewMode = VIEW_MODE_FEATURES;
             break;
         case VIEW_MODE_FEATURES:
             // input frame has RGBA format
@@ -185,7 +186,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         return true;
     }
     public native void ObjectAquisition(boolean aquisition);
-    public native void ShowStatusInfo(boolean display);
+    public native void TogleStatusInfo();
     public native void InitializeDetector();
     public native void SetFeature(int feature_idx);
     public native void ProcessFrame(long matAddrGray, long matAddrRgba);
