@@ -24,7 +24,7 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 	std::vector<cv::KeyPoint> keypoints;
 	cv::Mat descriptors;
 	cv::Mat mask = cv::Mat::zeros(img.size(), CV_8UC1);
-	cv::Mat roi(mask, cv::Rect(240,160,480,320));
+	cv::Mat roi(mask, cv::Rect(220,140,500,340));
 	roi = cv::Scalar(255);
 
 	detector.detect(img, keypoints, mask);
@@ -33,7 +33,7 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 	raw_descriptors.push_back(descriptors);
 
 	// for debugging
-	setup_initial_features();
+	//setup_initial_features();
 };
 
 void detection::setup_initial_features(){
@@ -42,7 +42,7 @@ void detection::setup_initial_features(){
 	if(raw_descriptors.size() == 0){
 		//not enough frames for matching
 	}
-	else if(raw_descriptors.size() > 1){
+	else if(raw_descriptors.size() >= 1){
 		initial_descriptors.push_back(raw_descriptors[0]);
 	}
 	else {
@@ -108,9 +108,9 @@ void detection::show_features(cv::Mat& img, std::vector<cv::KeyPoint>& points){
 };
 
 void detection::overlay_status_info(cv::Mat& img){
-	//cv::Mat tmp = initial_descriptors[0];
+	cv::Mat tmp = raw_descriptors[0];
 	std::stringstream fu;
 	//cv::Size_<uint> s = tmp.size();
-	fu << "# init ft: " << raw_descriptors.size(); //<< s.height;
+	fu << "# raw frames: " << raw_descriptors.size() << " # raw descr: " << tmp.size().height; //<< s.height;
 	cv::putText(img, fu.str() , cv::Point2i(50,460), CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0)); //"# init ft: %i", initial_descriptors.size()
 };

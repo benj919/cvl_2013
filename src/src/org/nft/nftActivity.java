@@ -43,7 +43,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
     private SubMenu 			   mFeatureMenu;
     
     private MenuItem               mItemPreviewCapture;
-    private MenuItem               mItemPreviewCanny;
+    private MenuItem               mItemPreviewInfo;
     private MenuItem               mItemPreviewFeatures;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
@@ -100,7 +100,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         mFeatureMenuItems[4] = mFeatureMenu.add(2, FEATURE_MSER, Menu.NONE, "MSER");
         
         mItemPreviewCapture = menu.add("Capture");
-        mItemPreviewCanny = menu.add("Info");
+        mItemPreviewInfo = menu.add("Info");
         mItemPreviewFeatures = menu.add("Find features");
         return true;
     }
@@ -176,8 +176,9 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
             SetFeature(selected_feature);
             mViewMode = VIEW_MODE_FT_SELECTION;
         } else if (item == mItemPreviewCapture) {
+        	CaptureFrame(0);
             mViewMode = VIEW_MODE_FT_SELECTION; //VIEW_MODE_FEATURES;
-        } else if (item == mItemPreviewCanny) {
+        } else if (item == mItemPreviewInfo) {
             mViewMode = VIEW_MODE_INFO;
         } else if (item == mItemPreviewFeatures) {
             mViewMode = VIEW_MODE_FEATURES;

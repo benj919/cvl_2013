@@ -53,9 +53,12 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_ProcessFrame(JNIEnv*, jobject, j
     new_keypoints = detector->track(mGr);
 
 	detector->show_features(mRgb, new_keypoints);
+
 	if(show_status_info){
 		detector->overlay_status_info(mRgb);
 	}
+
+	detector->add_target_rectangle(mRgb, cv::Point2i(480,320), cv::Point2i(240,160));
 }
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject){
 	// setup detection object/"framework"
