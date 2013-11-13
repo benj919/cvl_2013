@@ -15,6 +15,7 @@ int selected_feature = 0;
 bool object_aquisition = false;
 bool capture_frame = false;
 bool show_status_info = false;
+bool show_target_rectangle = false;
 bool tracking = false;
 int capture_idx = 0;
 detection* detector;
@@ -24,7 +25,9 @@ extern "C" {
 // Function definitions for the compiler to recognize them
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_ObjectAquisition(JNIEnv*, jobject, jboolean aquisition);
 
-JNIEXPORT void JNICALL Java_org_nft_nftActivity_TogleStatusInfo(JNIEnv*, jobject);
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowStatusInfo(JNIEnv*, jobject, jboolean status);
+
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowTargetRectangle(JNIEnv*, jobject, jboolean rectangle);
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject);
 
@@ -58,7 +61,9 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_ProcessFrame(JNIEnv*, jobject, j
 		detector->overlay_status_info(mRgb);
 	}
 
-	detector->add_target_rectangle(mRgb, cv::Point2i(480,320), cv::Point2i(240,160));
+	if(show_target_rectangle){
+		detector->show_target_rectangle(mRgb, cv::Point2i(480,320), cv::Point2i(240,160));
+	}
 }
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject){
 	// setup detection object/"framework"
@@ -72,13 +77,17 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_SetFeature(JNIEnv*, jobject, jin
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_CaptureFrame(JNIEnv*, jobject, jint capture_idx){
 	capture_frame = true;
 }
-JNIEXPORT void JNICALL Java_org_nft_nftActivity_TogleStatusInfo(JNIEnv*, jobject){
-	show_status_info = !show_status_info;
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowStatusInfo(JNIEnv*, jobject, jboolean status){
+	show_status_info = status;
 }
 
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_ObjectAquisition(JNIEnv*, jobject, jboolean aquisition){
 	object_aquisition = aquisition;
+}
+
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowTargetRectangle(JNIEnv*, jobject, jboolean rectangle){
+	show_target_rectangle = rectangle;
 }
 
 }

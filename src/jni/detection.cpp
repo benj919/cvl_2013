@@ -38,6 +38,7 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 
 void detection::setup_initial_features(){
 	// calculate the set of initial features (descriptors only) from the raw feature sets
+	// Useless right now, we just take the first frame.
 	std::vector<std::vector<cv::DMatch> > matches;
 	if(raw_descriptors.size() == 0){
 		//not enough frames for matching
@@ -94,7 +95,7 @@ std::vector<cv::KeyPoint> detection::track(cv::Mat& img){
 	return result;
 };
 
-void detection::add_target_rectangle(cv::Mat& img, cv::Point2i top_left, cv::Point2i bottom_right){
+void detection::show_target_rectangle(cv::Mat& img, cv::Point2i top_left, cv::Point2i bottom_right){
 	//add targeting rectangle for initial acquisition
 	cv::rectangle(img, top_left, bottom_right, cv::Scalar(100,100,100,100), 2);
 };
@@ -108,9 +109,12 @@ void detection::show_features(cv::Mat& img, std::vector<cv::KeyPoint>& points){
 };
 
 void detection::overlay_status_info(cv::Mat& img){
-	cv::Mat tmp = raw_descriptors[0];
-	std::stringstream fu;
-	//cv::Size_<uint> s = tmp.size();
-	fu << "# raw frames: " << raw_descriptors.size() << " # raw descr: " << tmp.size().height; //<< s.height;
-	cv::putText(img, fu.str() , cv::Point2i(50,460), CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0)); //"# init ft: %i", initial_descriptors.size()
+	std::stringstream str_stream;
+	if(not raw_descriptors.empty()){
+		cv::Mat tmp = raw_descriptors[0];
+		str_stream << "# raw frames: " << raw_descriptors.size() << " # raw descr: " << tmp.size().height; //<< s.height;
+	} else {
+		str_stream << "no features captured";
+	}
+	cv::putText(img, str_stream.str() , cv::Point2i(50,460), CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0)); //"# init ft: %i", initial_descriptors.size()
 };

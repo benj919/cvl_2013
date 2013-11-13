@@ -15,7 +15,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SubMenu;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
 public class nftActivity extends Activity implements CvCameraViewListener2 {
@@ -24,7 +27,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
     private static final int       VIEW_MODE_FT_SELECTION     = 0;
     private static final int       VIEW_MODE_CAPTURE     = 1;
     private static final int       VIEW_MODE_INFO    = 2;
-    private static final int       VIEW_MODE_FEATURES = 5;
+    private static final int       VIEW_MODE_TRACK = 5;
     
     private int 				   selected_feature;
     private static final int	   FEATURE_ORB = 0;
@@ -44,9 +47,12 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
     
     private MenuItem               mItemPreviewCapture;
     private MenuItem               mItemPreviewInfo;
-    private MenuItem               mItemPreviewFeatures;
+    private MenuItem               mItemPreviewTracking;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
+    
+    private boolean show_status = false;
+    private boolean show_target = false;
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -84,6 +90,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.nft_activity_surface_view);
         mOpenCvCameraView.setMaxFrameSize(720, 480);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.setOnTouchListener(myTouchListener);
         
     }
 
@@ -101,7 +108,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         
         mItemPreviewCapture = menu.add("Capture");
         mItemPreviewInfo = menu.add("Info");
-        mItemPreviewFeatures = menu.add("Find features");
+        mItemPreviewTracking = menu.add("Track features");
         return true;
     }
 
@@ -119,7 +126,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         super.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mLoaderCallback);
     }
-
+    
     public void onDestroy() {
         super.onDestroy();
         if (mOpenCvCameraView != null)
@@ -141,30 +148,23 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
         final int viewMode = mViewMode;
         switch (viewMode) {
+        // TODO this could be much shorter
         case VIEW_MODE_FT_SELECTION:
-            // input frame has RBGA format
-            mRgba = inputFrame.rgba();
             break;
         case VIEW_MODE_INFO:
-            // input frame has gray scale format
-            mRgba = inputFrame.rgba();
-            mViewMode = VIEW_MODE_FEATURES;
-            TogleStatusInfo();
+            mViewMode = VIEW_MODE_TRACK;
+            show_status = !show_status;
+            ShowStatusInfo(show_status);
             break;
         case VIEW_MODE_CAPTURE:
-            // input frame has gray scale format
-            CaptureFrame(0);
-            mRgba = inputFrame.rgba();
-            mViewMode = VIEW_MODE_FEATURES;
             break;
-        case VIEW_MODE_FEATURES:
-            // input frame has RGBA format
-            mRgba = inputFrame.rgba();
-            mGray = inputFrame.gray();
-            ProcessFrame(mGray.getNativeObjAddr(), mRgba.getNativeObjAddr());
+        case VIEW_MODE_TRACK:
             break;
         }
-
+        mRgba = inputFrame.rgba();
+        mGray = inputFrame.gray();
+        
+        ProcessFrame(mGray.getNativeObjAddr(), mRgba.getNativeObjAddr());
         return mRgba;
     }
 
@@ -176,18 +176,43 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
             SetFeature(selected_feature);
             mViewMode = VIEW_MODE_FT_SELECTION;
         } else if (item == mItemPreviewCapture) {
-        	CaptureFrame(0);
-            mViewMode = VIEW_MODE_FT_SELECTION; //VIEW_MODE_FEATURES;
+            mViewMode = VIEW_MODE_CAPTURE; //VIEW_MODE_FEATURES;
+            if (!show_target){
+            	show_target = true;
+            	ShowTargetRectangle(show_target);
+            }
         } else if (item == mItemPreviewInfo) {
             mViewMode = VIEW_MODE_INFO;
-        } else if (item == mItemPreviewFeatures) {
-            mViewMode = VIEW_MODE_FEATURES;
+        } else if (item == mItemPreviewTracking) {
+            mViewMode = VIEW_MODE_TRACK;
+        }
+        //unfortunate but easy
+        if(item != mItemPreviewCapture && show_target){
+        	show_target = false;
+        	ShowTargetRectangle(show_target);
         }
 
         return true;
     }
+    // helper class for getting touch events
+    private OnTouchListener myTouchListener = new OnTouchListener() {
+    	public boolean onTouch(View v, MotionEvent e){
+    		if (mViewMode == VIEW_MODE_CAPTURE){
+    			// we want to capture frames
+    			switch (e.getAction()){
+    			case MotionEvent.ACTION_UP:
+    				//Tap has finished
+    				Log.i(TAG, "mylistener called, end of touch");
+    				CaptureFrame(0);
+    			}
+    		}
+    		return true;
+    	}
+    };
+    // native calls
     public native void ObjectAquisition(boolean aquisition);
-    public native void TogleStatusInfo();
+    public native void ShowStatusInfo(boolean status);
+    public native void ShowTargetRectangle(boolean rectangle);
     public native void InitializeDetector();
     public native void SetFeature(int feature_idx);
     public native void ProcessFrame(long matAddrGray, long matAddrRgba);
