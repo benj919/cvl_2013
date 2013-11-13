@@ -10,7 +10,7 @@ detection::detection():
 	initial_descriptors(0),
 	raw_descriptors(0),
 	detector(250),
-	matcher(cv::NORM_HAMMING, true)
+	matcher(cv::NORM_HAMMING, false)
 {};
 
 detection::~detection() {
@@ -47,6 +47,7 @@ void detection::setup_initial_features(){
 		initial_descriptors.push_back(raw_descriptors[0]);
 	}
 	else {
+		//TODO not used right now
 		initial_descriptors.reserve(2);
 		// match and filter
 		matcher.knnMatch( raw_descriptors[0], raw_descriptors[1], matches, 2 );
@@ -77,19 +78,19 @@ std::vector<cv::KeyPoint> detection::track(cv::Mat& img){
 	detector.detect(img, keypoints_new);
 	detector.compute(img, keypoints_new, descriptors_new);
 
-	if(keypoints_new.size() == 0 or initial_keypoints.size() == 0){
+	if(keypoints_new.size() == 0 or initial_descriptors.size() == 0){
 		// no features??
 		return keypoints_new;
 	}
 
-	matcher.knnMatch( initial_descriptors[0], descriptors_new, matches, 2);
+	matcher.knnMatch( descriptors_new, initial_descriptors[0], matches, 2);
 
 	for( unsigned int i = 0; i < matches.size(); i++ )
 	{
 		cv::DMatch m1 = matches[i][0];
 		cv::DMatch m2 = matches[i][1];
 		if(m1.distance < 0.6* m2.distance){
-			result.push_back(keypoints_new[m1.trainIdx]);
+			result.push_back(keypoints_new[m1.queryIdx]);
 	        }
 	    }
 	return result;
