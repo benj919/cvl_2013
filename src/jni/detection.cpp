@@ -9,7 +9,7 @@ detection::detection():
 	initial_keypoints(0),
 	initial_descriptors(0),
 	raw_descriptors(0),
-	detector(250),
+	detector(1000),
 	matcher(cv::NORM_HAMMING, false)
 {};
 
@@ -71,11 +71,40 @@ void detection::setup_initial_features(){
 std::vector<cv::KeyPoint> detection::track(cv::Mat& img){
 	// try to find and track the initial features in the given image
 
-	std::vector<cv::KeyPoint> keypoints_new, result;
+	std::vector<cv::KeyPoint> keypoints_raw, keypoints_new, result;
 	cv::Mat descriptors_new;
 	std::vector<std::vector<cv::DMatch> > matches;
 
 	detector.detect(img, keypoints_new);
+	/*
+	//dicisionDistance decide the distance between features(feature select process)
+	int dicisionDistance=5;
+
+	for( unsigned int j = 0; j < keypoints_raw.size(); j++ )
+	{
+
+		bool xok=true;
+		bool yok=true;
+
+		for(int i = 0; i < keypoints_new.size(); i++)
+		{
+
+			if (keypoints_raw[j].pt.x<keypoints_new[i].pt.x+dicisionDistance&&keypoints_raw[j].pt.x>keypoints_new[i].pt.x-dicisionDistance)
+			{
+				xok=false;
+			}
+			if (keypoints_raw[j].pt.y<keypoints_new[i].pt.y+dicisionDistance&&keypoints_raw[j].pt.y>keypoints_new[i].pt.y-dicisionDistance)
+			{
+				yok=false;
+			}
+		}
+
+		if (xok||yok)
+		{
+			keypoints_new.push_back(keypoints_raw[j]);
+		}
+	}
+*/
 	detector.compute(img, keypoints_new, descriptors_new);
 
 	if(keypoints_new.size() == 0 or initial_descriptors.size() == 0){
