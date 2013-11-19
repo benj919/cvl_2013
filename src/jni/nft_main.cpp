@@ -6,19 +6,11 @@
 
 #include<android/log.h>
 
-#include "detection.hpp"
+#include "nft_application.hpp"
 
 using namespace std;
-int selected_feature = 0;
 
-// initial object capture
-bool object_aquisition = false;
-bool capture_frame = false;
-bool show_status_info = false;
-bool show_target_rectangle = false;
-bool tracking = false;
-int capture_idx = 0;
-detection* detector;
+nft_application* application; // = new nft_application();
 
 extern "C" {
 
@@ -42,52 +34,28 @@ JNIEXPORT void JNICALL Java_org_nft_nftActivity_ProcessFrame(JNIEnv*, jobject, j
 {
     cv::Mat& mGr  = *(cv::Mat*)matAddrGray;
     cv::Mat& mRgb = *(cv::Mat*)matAddrRgba;
-    std::vector<cv::KeyPoint> new_keypoints;
 
-    if (capture_frame){
-    	detector->extract_and_add_raw_features(mGr);
-//    	if(detector->raw_descriptors.size() == 2){
-//    		detector->setup_initial_features();
-//    	}
-    	capture_frame = false;
-    	return;
-    }
-
-    new_keypoints = detector->track(mGr);
-
-	detector->show_features(mRgb, new_keypoints);
-
-	if(show_status_info){
-		detector->overlay_status_info(mRgb);
-	}
-
-	if(show_target_rectangle){
-		detector->show_target_rectangle(mRgb, cv::Point2i(480,320), cv::Point2i(240,160));
-	}
+    application->process_frame(mRgb, mGr);
 }
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_InitializeDetector(JNIEnv*, jobject){
 	// setup detection object/"framework"
-	detector = new detection();
+	application = new nft_application();
 }
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_SetFeature(JNIEnv*, jobject, jint feature_idx){
-	selected_feature = feature_idx;
+	application->set_feature(feature_idx);
 }
 
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_CaptureFrame(JNIEnv*, jobject, jint capture_idx){
-	capture_frame = true;
+	application->capture_frame();
 }
 JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowStatusInfo(JNIEnv*, jobject, jboolean status){
-	show_status_info = status;
+	application->show_info(status);
 }
 
 
-JNIEXPORT void JNICALL Java_org_nft_nftActivity_ObjectAquisition(JNIEnv*, jobject, jboolean aquisition){
-	object_aquisition = aquisition;
-}
-
-JNIEXPORT void JNICALL Java_org_nft_nftActivity_ShowTargetRectangle(JNIEnv*, jobject, jboolean rectangle){
-	show_target_rectangle = rectangle;
+JNIEXPORT void JNICALL Java_org_nft_nftActivity_ObjectAquisition(JNIEnv*, jobject, jboolean acquisition){
+	application->object_acquisition(acquisition);
 }
 
 }
