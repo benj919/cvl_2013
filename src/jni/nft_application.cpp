@@ -22,7 +22,10 @@ void nft_application::process_frame(cv::Mat& rgb, cv::Mat& gray){
     	return;
     }
 
-    //homography = detector->detect(gray);
+    if(detector->detect(gray)){
+    	// We have a homography -> warp and show rectangle or opengl model
+    	detector->warp_rectangle(rgb);
+    }
 
 	//detector->show_features(rgb, new_keypoints);
 
@@ -34,7 +37,7 @@ void nft_application::process_frame(cv::Mat& rgb, cv::Mat& gray){
 		detector->show_target_rectangle(rgb, cv::Point2i(480,320), cv::Point2i(240,160));
 	}
 
-	// Step 2: use Homography to find object, hand it over to tracker, get position
+
 };
 
 void nft_application::capture_frame(){

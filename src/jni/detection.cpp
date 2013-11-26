@@ -76,7 +76,7 @@ void detection::setup_initial_features(){
 };
 
 
-cv::Mat detection::detect(cv::Mat& img){
+bool detection::detect(cv::Mat& img){
 	// try to find and track the initial features in the given image
 
 	std::vector<cv::KeyPoint> keypoints_new;
@@ -89,10 +89,15 @@ cv::Mat detection::detect(cv::Mat& img){
 
 	if(keypoints_new.size() == 0 or !initialized){
 		// no features detected or not yet initialized
-		return cv::Mat::zeros(4,3,CV_32F);
+		return false;
 	}
 
 	matcher.match(initial_descriptors[0], descriptors_new, matches);
+
+	if(matches.size() < 10){
+		return false;
+	}
+
 	std::vector<cv::Point2f> initial_pts;
 	std::vector<cv::Point2f> new_pts;
 
@@ -104,9 +109,35 @@ cv::Mat detection::detect(cv::Mat& img){
 		new_pts.push_back(new_pt.pt);
 	}
 
-	result = cv::findHomography(initial_pts, new_pts, CV_RANSAC);
+	homography = cv::findHomography(initial_pts, new_pts, CV_RANSAC);
 
-	return result;
+//	cv::RotatedRect box = cv::minAreaRect(cv::Mat(initial_pts));
+//	cv::Point2f vertices[4], dst[4];
+//	box.points(vertices);
+//	cv::perspectiveTransform(vertices, dst, homography);
+//	for (int i = 0; i < 4; ++i){
+//	cv::line(img, vertices[i], vertices[(i + 1) % 4], cv::Scalar(0, 255, 0), 1, CV_AA);
+//	}
+
+	return true;
+};
+
+void detection::warp_rectangle(cv::Mat& img){
+	std::vector<cv::Point2f> src(4);
+	std::vector<cv::Point2f> dst(4);
+
+	src[0] = cv::Point(480,320);
+	src[1] = cv::Point(480,160);
+	src[2] = cv::Point(240,160);
+	src[3] = cv::Point(240,320);
+
+	cv::perspectiveTransform(src, dst, homography);
+
+	cv::Scalar color(125,125,0);
+	cv::line(img, dst[0], dst[1], color);
+	cv::line(img, dst[1], dst[2], color);
+	cv::line(img, dst[2], dst[3], color);
+	cv::line(img, dst[3], dst[0], color);
 };
 
 void detection::show_target_rectangle(cv::Mat& img, cv::Point2i top_left, cv::Point2i bottom_right){
@@ -135,6 +166,30 @@ void detection::overlay_status_info(cv::Mat& img){
 
 void detection::set_feature(int idx){
 	//create new feature detector, extractor, and recalculated initial features if they are already there
+	initial_keypoints.clear();
+	initial_descriptors.clear();
+
+	switch(idx){
+	// TODO change to available descriptors/extractors
+	case 0:
+		// ORB
+		break;
+	case 1:
+		//SURF
+		break;
+	case 2:
+		//SIFT
+		break;
+	case 3:
+		//STAR
+		break;
+	case 4:
+		//MSER
+		break;
+	default:
+		//whatever
+		break;
+	}
 
 }
 

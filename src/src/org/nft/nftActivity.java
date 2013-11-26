@@ -179,7 +179,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
             mViewMode = VIEW_MODE_CAPTURE; //VIEW_MODE_FEATURES;
             if (!show_target){
             	show_target = true;
-            	ShowTargetRectangle(show_target);
+            	ObjectAquisition(show_target);
             }
         } else if (item == mItemPreviewInfo) {
             mViewMode = VIEW_MODE_INFO;
@@ -189,7 +189,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         //unfortunate but easy
         if(item != mItemPreviewCapture && show_target){
         	show_target = false;
-        	ShowTargetRectangle(show_target);
+        	ObjectAquisition(show_target);
         }
 
         return true;
@@ -212,7 +212,6 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
     // native calls
     public native void ObjectAquisition(boolean aquisition);
     public native void ShowStatusInfo(boolean status);
-    public native void ShowTargetRectangle(boolean rectangle);
     public native void InitializeDetector();
     public native void SetFeature(int feature_idx);
     public native void ProcessFrame(long matAddrGray, long matAddrRgba);
