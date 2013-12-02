@@ -1,5 +1,5 @@
-obj/local/armeabi-v7a/objs/mixed_sample/nft_main.o: jni/nft_main.cpp \
- C:/NVPACK/android-ndk-r8e/platforms/android-8/arch-arm/usr/include/jni.h \
+obj/local/armeabi-v7a/objs/mixed_sample/nft_application.o: \
+ jni/nft_application.cpp jni/nft_application.hpp \
  ../../sdk/native/jni/include/opencv2/core/core.hpp \
  ../../sdk/native/jni/include/opencv2/core/types_c.h \
  C:/NVPACK/android-ndk-r8e/platforms/android-8/arch-arm/usr/include/assert.h \
@@ -48,20 +48,17 @@ obj/local/armeabi-v7a/objs/mixed_sample/nft_main.o: jni/nft_main.cpp \
  ../../sdk/native/jni/include/opencv2/features2d/features2d.hpp \
  ../../sdk/native/jni/include/opencv2/flann/miniflann.hpp \
  ../../sdk/native/jni/include/opencv2/flann/defines.h \
- ../../sdk/native/jni/include/opencv2/flann/config.h \
- C:/NVPACK/android-ndk-r8e/platforms/android-8/arch-arm/usr/include/android/log.h \
- jni/nft_application.hpp jni/tracking.hpp \
+ ../../sdk/native/jni/include/opencv2/flann/config.h jni/tracking.hpp \
  ../../sdk/native/jni/include/opencv2/highgui/highgui.hpp \
  ../../sdk/native/jni/include/opencv2/highgui/highgui_c.h \
  ../../sdk/native/jni/include/opencv2/video/video.hpp \
  ../../sdk/native/jni/include/opencv2/video/tracking.hpp \
  ../../sdk/native/jni/include/opencv2/video/background_segm.hpp \
  C:/NVPACK/android-ndk-r8e/sources/cxx-stl/gnu-libstdc++/4.6/include/list \
- ../../sdk/native/jni/include/opencv2/calib3d/calib3d.hpp \
  C:/NVPACK/android-ndk-r8e/sources/cxx-stl/gnu-libstdc++/4.6/include/iostream \
  jni/detection.hpp
 
-C:/NVPACK/android-ndk-r8e/platforms/android-8/arch-arm/usr/include/jni.h:
+jni/nft_application.hpp:
 
 ../../sdk/native/jni/include/opencv2/core/core.hpp:
 
@@ -161,10 +158,6 @@ C:/NVPACK/android-ndk-r8e/sources/cxx-stl/gnu-libstdc++/4.6/include/limits:
 
 ../../sdk/native/jni/include/opencv2/flann/config.h:
 
-C:/NVPACK/android-ndk-r8e/platforms/android-8/arch-arm/usr/include/android/log.h:
-
-jni/nft_application.hpp:
-
 jni/tracking.hpp:
 
 ../../sdk/native/jni/include/opencv2/highgui/highgui.hpp:
@@ -178,8 +171,6 @@ jni/tracking.hpp:
 ../../sdk/native/jni/include/opencv2/video/background_segm.hpp:
 
 C:/NVPACK/android-ndk-r8e/sources/cxx-stl/gnu-libstdc++/4.6/include/list:
-
-../../sdk/native/jni/include/opencv2/calib3d/calib3d.hpp:
 
 C:/NVPACK/android-ndk-r8e/sources/cxx-stl/gnu-libstdc++/4.6/include/iostream:
 

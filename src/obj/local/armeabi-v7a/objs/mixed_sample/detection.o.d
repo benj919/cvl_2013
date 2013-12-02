@@ -47,7 +47,9 @@ obj/local/armeabi-v7a/objs/mixed_sample/detection.o: jni/detection.cpp \
  ../../sdk/native/jni/include/opencv2/features2d/features2d.hpp \
  ../../sdk/native/jni/include/opencv2/flann/miniflann.hpp \
  ../../sdk/native/jni/include/opencv2/flann/defines.h \
- ../../sdk/native/jni/include/opencv2/flann/config.h jni/detection.hpp
+ ../../sdk/native/jni/include/opencv2/flann/config.h \
+ ../../sdk/native/jni/include/opencv2/calib3d/calib3d.hpp \
+ jni/detection.hpp
 
 ../../sdk/native/jni/include/opencv2/core/core.hpp:
 
@@ -146,5 +148,7 @@ C:/NVPACK/android-ndk-r8e/sources/cxx-stl/gnu-libstdc++/4.6/include/limits:
 ../../sdk/native/jni/include/opencv2/flann/defines.h:
 
 ../../sdk/native/jni/include/opencv2/flann/config.h:
+
+../../sdk/native/jni/include/opencv2/calib3d/calib3d.hpp:
 
 jni/detection.hpp:
