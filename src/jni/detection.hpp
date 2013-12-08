@@ -18,6 +18,11 @@ public:
     cv::Mat homography;
     bool initialized;
 
+    //wire model house
+    std::vector<cv::Point3f> house_vertices;
+    std::vector<std::vector<int> > house_edges;
+    //std::vector<std::tuple<int, int> > house_edges;
+
 	// init & destructor
 	detection();
 	~detection();
@@ -51,4 +56,6 @@ public:
 	std::vector<cv::KeyPoint> non_max_suppression(std::vector<cv::KeyPoint> keypoints, int max_dist);
 	// non-maximum suppression for feature detectors which lack this;
 	// should probably be used for initial feature setup only
+
+	void set_up_house();
 };
