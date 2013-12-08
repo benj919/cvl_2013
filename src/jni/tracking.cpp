@@ -11,9 +11,9 @@ using namespace cv;
 tracking::tracking(){
 	//kalman filter setup
 
-	kalman = cvCreateKalman( 4, 2, 0 );//state(x,y,detaX,detaY)
-	process_noise = cvCreateMat( 4, 1, CV_32FC1 );
-	measurement = cvCreateMat( 2, 1, CV_32FC1 );//measurement(x,y)
+	kalman = cvCreateKalman( 6, 3, 0 );//state(x,y,z,detaX,detaY,detaZ)
+	process_noise = cvCreateMat( 6, 1, CV_32FC1 );
+	measurement = cvCreateMat( 3, 1, CV_32FC1 );//measurement(x,y,z)
 	rng = cvRNG(-1);
 
 
@@ -26,12 +26,13 @@ tracking::~tracking(){
 };
 
 void tracking::initial_tracker(){
-    //question1 about WHY this A always complain!
-	A[4][4]={//transition matrix
-		{1,0,1,0},
-		{0,1,0,1},
-		{0,0,1,0},
-		{0,0,0,1}
+	A={//transition matrix
+			1,0,0,0.5,0  ,0,
+			0,1,0,0  ,0.5,0,
+			0,0,1,0  ,0  ,0.5,
+			0,0,0,1  ,0  ,0,
+			0,0,0,0  ,1  ,0,
+			0,0,0,0  ,0  ,1
 	};
 
 	memcpy( kalman->transition_matrix->data.fl,A,sizeof(A));
@@ -39,28 +40,32 @@ void tracking::initial_tracker(){
 	cvSetIdentity(kalman->process_noise_cov,cvRealScalar(1e-5));
 	cvSetIdentity(kalman->measurement_noise_cov,cvRealScalar(1e-1));
 	cvSetIdentity(kalman->error_cov_post,cvRealScalar(1));
-	//initialize post state of kalman filter at random
-	//coordinate1 about image size
-	Size imageSize;
-	imageSize = Size((int) mGr.get(CV_CAP_PROP_FRAME_WIDTH), (int) mGr.get(CV_CAP_PROP_FRAME_HEIGHT));
-	cvRandArr(&rng,kalman->state_post,CV_RAND_UNI,cvRealScalar(0),cvRealScalar(imageSize.height>imageSize.width?imageSize.width:imageSize.height));
+	//initialize post state of kalman filter at zero
+	cvRandArr(&rng,kalman->state_post,CV_RAND_UNI,cvRealScalar(0),cvRealScalar(0));
 }
 
-void tracking::pridict_tracker(){
+Point3f tracking::pridict_tracker(){
 	const CvMat* prediction=cvKalmanPredict(kalman,0);
-	predict_pt=cvPoint((int)prediction->data.fl[0],(int)prediction->data.fl[1]);
+	predict_pt=cvPoint((int)prediction->data.fl[0],(int)prediction->data.fl[1],(int)prediction->data.fl[2]);
+	return predict_pt;
 }
 
-void tracking::update_measurement_tracker(){
-	//coordinate2 about measurement value
-	measurement->data.fl[0]=(float)newposition.x;
-	measurement->data.fl[1]=(float)newposition.y;
+void tracking::update_measurement_tracker(Point3f realPosition){
+
+	measurement->data.fl[0]=(float)realPosition.x;
+	measurement->data.fl[1]=(float)realPosition.y;
+	measurement->data.fl[2]=(float)realPosition.z;
 }
 
 void tracking::update_tracker(){
 	cvKalmanCorrect( kalman, measurement );
 }
 
-void tracking::track(){
+Point3f tracking::track(Point3f realPosition){
+//here still have same problem please try on your computer if your computer recognize it
+	CvPoint predict=tracking::pridict_tracker();
+	update_measurement_tracker(Point3f realPosition);
+	update_tracker();
+	return predict;
 
 };
