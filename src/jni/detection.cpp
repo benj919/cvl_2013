@@ -150,9 +150,9 @@ void detection::warp_rectangle(cv::Mat& img){
 	cv::Mat K = (cv::Mat_<double>(3,3) << 	1.0, 0.0, 0.0,
 											0.0, 1.0, 0.0,
 											0.0, 0.0, 1.0);
-	std::vector<cv::Point3f> base =
+	//std::vector<cv::Point3f> base =
 
-	cv::solvePnP()
+	//cv::solvePnP()
 };
 
 void detection::show_target_rectangle(cv::Mat& img, cv::Point2i top_left, cv::Point2i bottom_right){
@@ -240,27 +240,27 @@ bool compare_keypoints(const cv::KeyPoint& a, const cv::KeyPoint& b){
 };
 
 void detection::set_up_house(){
-	std::vector<int>* fu;
+	std::vector<int>& fu = house_edges[0];
 
-	house_vertices.push_back(cv::Point3f(0,0,0));
-	house_vertices.push_back(cv::Point3f(0,1,0));
-	house_vertices.push_back(cv::Point3f(1,1,0));
-	house_vertices.push_back(cv::Point3f(1,0,0));
-	house_vertices.push_back(cv::Point3f(0,0,1));
-	house_vertices.push_back(cv::Point3f(0,1,1));
-	house_vertices.push_back(cv::Point3f(1,1,1));
-	house_vertices.push_back(cv::Point3f(1,0,1));
-	house_vertices.push_back(cv::Point3f(0,0.5,2));
-	house_vertices.push_back(cv::Point3f(1,0.5,2));
+	house_vertices.push_back(cv::Point3f(0.0,0.0,0.0));
+	house_vertices.push_back(cv::Point3f(0.0,1.0,0.0));
+	house_vertices.push_back(cv::Point3f(1.0,1.0,0.0));
+	house_vertices.push_back(cv::Point3f(1.0,0.0,0.0));
+	house_vertices.push_back(cv::Point3f(0.0,0.0,1.0));
+	house_vertices.push_back(cv::Point3f(0.0,1.0,1.0));
+	house_vertices.push_back(cv::Point3f(1.0,1.0,1.0));
+	house_vertices.push_back(cv::Point3f(1.0,0.0,1.0));
+	house_vertices.push_back(cv::Point3f(0.0,0.5,2.0));
+	house_vertices.push_back(cv::Point3f(1.0,0.5,2.0));
 	house_edges.resize(10);
-	fu = house_edges[0]; fu->push_back(1); fu->push_back(4);
-	fu = house_edges[1]; fu->push_back(2); fu->push_back(5);
-	fu = house_edges[2]; fu->push_back(3); fu->push_back(6);
-	fu = house_edges[3]; fu->push_back(0); fu->push_back(7);
-	fu = house_edges[4]; fu->push_back(5); fu->push_back(8);
-	fu = house_edges[5]; fu->push_back(6); fu->push_back(8);
-	fu = house_edges[6]; fu->push_back(7); fu->push_back(9);
-	fu = house_edges[7]; fu->push_back(4); fu->push_back(9);
-	fu = house_edges[8]; fu->push_back(9);
+	fu = house_edges[0]; fu.push_back(1); fu.push_back(4);
+	fu = house_edges[1]; fu.push_back(2); fu.push_back(5);
+	fu = house_edges[2]; fu.push_back(3); fu.push_back(6);
+	fu = house_edges[3]; fu.push_back(0); fu.push_back(7);
+	fu = house_edges[4]; fu.push_back(5); fu.push_back(8);
+	fu = house_edges[5]; fu.push_back(6); fu.push_back(8);
+	fu = house_edges[6]; fu.push_back(7); fu.push_back(9);
+	fu = house_edges[7]; fu.push_back(4); fu.push_back(9);
+	fu = house_edges[8]; fu.push_back(9);
 
 };
