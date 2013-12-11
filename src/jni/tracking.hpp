@@ -19,9 +19,9 @@ public:
 	~tracking();
 
     void initial_tracker();
-    cv::Point3f predict_tracker();
+    void predict_tracker();
     void update_measurement_tracker(cv::Point3f realPosition);
-    void update_tracker();
+    cv::Point3f update_tracker();
     cv::Point3f track(cv::Point3f realPosition);
 
 };

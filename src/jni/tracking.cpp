@@ -42,10 +42,10 @@ void tracking::initial_tracker(){
 	cv::randn(kalman.statePost, cv::Scalar(0), cv::Scalar(0.1));
 }
 
-cv::Point3f tracking::predict_tracker(){
+void tracking::predict_tracker(){
 	const cv::Mat prediction=kalman.predict();
 	//cv::Point3f predict_pt=cv::Point3f(prediction->data.fl);
-	return predict_pt;
+
 }
 
 void tracking::update_measurement_tracker(Point3f realPosition){
@@ -53,15 +53,20 @@ void tracking::update_measurement_tracker(Point3f realPosition){
 			(float)realPosition.x,(float)realPosition.y,(float)realPosition.z);
 }
 
-void tracking::update_tracker(){
-	kalman.correct(measurement);
+cv::Point3f tracking::update_tracker(){
+	const cv::Mat prediction=kalman.correct(measurement);
+	Point3f predict_pt;
+	predict_pt.x = prediction.at<float>(0);
+	predict_pt.y = prediction.at<float>(1);
+	predict_pt.z = prediction.at<float>(2);
+	return predict_pt;
 }
 
 cv::Point3f tracking::track(cv::Point3f realPosition){
 
-	cv::Point3f predict=tracking::predict_tracker();
+	predict_tracker();
 	update_measurement_tracker(realPosition);
-	update_tracker();
+	cv::Point3f predict=update_tracker();
 	return predict;
 
 };
