@@ -9,9 +9,9 @@ class tracking{
 	// features
 public:
 
-	cv::KalmanFilter* kalman;
-	cv::Mat* process_noise;
-	cv::Mat* measurement;
+	cv::KalmanFilter kalman;
+	cv::Mat process_noise;
+	cv::Mat measurement;
 	cv::RNG rng;
 	cv::Point3f predict_pt;
 

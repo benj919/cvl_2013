@@ -17,6 +17,7 @@ public:
     cv::Point2i previous_location;
     cv::Mat homography;
     bool initialized;
+    cv::Mat K, K_inv;
 
     //wire model house
     std::vector<cv::Point3f> house_vertices;
