@@ -1,3 +1,4 @@
+
 #include <opencv2/video/tracking.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
@@ -25,3 +26,4 @@ public:
     cv::Point3f track(cv::Point3f realPosition);
 
 };
+

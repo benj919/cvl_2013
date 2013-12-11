@@ -6,6 +6,10 @@
 
 #include "detection.hpp"
 
+#define f 690.3
+#define px 320.0
+#define py 240.0
+
 detection::detection():
 	initial_keypoints(0),
 	initial_descriptors(0),
@@ -14,6 +18,8 @@ detection::detection():
 	detector(250),
 	matcher(cv::NORM_HAMMING, true){
 
+	K = *(cv::Mat_<float>(3,3) << f,0.0,px, 0.0,f,py, 0.0,0.0,1.0);
+	K_inv = K.inv();
 	//set up wire house
 	set_up_house();
 };
