@@ -16,12 +16,13 @@ detection::detection():
 	raw_descriptors(0),
 	initialized(false),
 	detector(250),
-	matcher(cv::NORM_HAMMING, true){
+	matcher(cv::NORM_HAMMING, true),
+	flann_matcher(){
 
 	K = *(cv::Mat_<float>(3,3) << f,0.0,px, 0.0,f,py, 0.0,0.0,1.0);
 	K_inv = K.inv();
 	//set up wire house
-	set_up_house();
+	//set_up_house();
 };
 
 detection::~detection() {
@@ -41,7 +42,7 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 
 	detector.detect(img, keypoints, mask);
 
-	nonmaxed_keypoints = non_max_suppression(keypoints, 5);
+	nonmaxed_keypoints = non_max_suppression(keypoints, 2);
 
 	detector.compute(img, nonmaxed_keypoints, descriptors);
 
@@ -88,6 +89,8 @@ void detection::setup_initial_features(){
 bool detection::detect(cv::Mat& img){
 	// try to find and track the initial features in the given image
 
+	if(!initialized){return false;}
+
 	std::vector<cv::KeyPoint> keypoints_new;
 	cv::Mat result;
 	cv::Mat descriptors_new;
@@ -102,6 +105,7 @@ bool detection::detect(cv::Mat& img){
 	}
 
 	matcher.match(initial_descriptors[0], descriptors_new, matches);
+	//flann_matcher.match(initial_descriptors[0], descriptors_new, matches);
 
 	if(matches.size() < 10){
 		return false;
@@ -226,7 +230,8 @@ std::vector<cv::KeyPoint> detection::non_max_suppression(std::vector<cv::KeyPoin
 			if(cur_it == cmp_it ||
 					std::abs( (*cur_it).pt.x - (*cmp_it).pt.x ) > max_dist ||
 					std::abs( (*cur_it).pt.y - (*cmp_it).pt.y ) > max_dist ||
-					(*cur_it).response > (*cmp_it).response ) {
+					(*cur_it).response > (*cmp_it).response ||
+					(*cur_it).octave == (*cmp_it).octave) {
 				continue;
 			}
 			else{

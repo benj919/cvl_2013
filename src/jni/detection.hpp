@@ -11,6 +11,7 @@ public:
 	cv::FeatureDetector* gen_detector;
     cv::OrbFeatureDetector  detector;
     cv::BFMatcher matcher;
+    cv::FlannBasedMatcher flann_matcher;
     std::vector<cv::KeyPoint> initial_keypoints;
     std::vector<cv::Mat> initial_descriptors;
     std::vector<cv::Mat> raw_descriptors;
