@@ -88,7 +88,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         setContentView(R.layout.nft_surface_view);
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.nft_activity_surface_view);
-        mOpenCvCameraView.setMaxFrameSize(720, 480);
+        mOpenCvCameraView.setMaxFrameSize(640, 480);
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView.setOnTouchListener(myTouchListener);
         
@@ -146,6 +146,7 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
     }
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+    	long start = System.currentTimeMillis();
         final int viewMode = mViewMode;
         switch (viewMode) {
         // TODO this could be much shorter
@@ -164,7 +165,12 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
         mRgba = inputFrame.rgba();
         mGray = inputFrame.gray();
         
-        ProcessFrame(mGray.getNativeObjAddr(), mRgba.getNativeObjAddr());
+        
+        ProcessFrame(mGray.getNativeObjAddr(), mRgba.getNativeObjAddr());        
+        long end = System.currentTimeMillis();
+        
+        Log.i(TAG, "processing time in ms: " + (end - start));
+        
         return mRgba;
     }
 
@@ -203,6 +209,9 @@ public class nftActivity extends Activity implements CvCameraViewListener2 {
     			case MotionEvent.ACTION_UP:
     				//Tap has finished
     				Log.i(TAG, "mylistener called, end of touch");
+    				mViewMode = VIEW_MODE_TRACK;
+                	show_target = true;
+                	ObjectAquisition(show_target);
     				CaptureFrame(0);
     			}
     		}

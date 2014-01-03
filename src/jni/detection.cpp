@@ -4,6 +4,12 @@
 #include "opencv2/calib3d/calib3d.hpp"
 #include <vector>
 
+#include <android/log.h>
+#define  LOG_TAG    "OCVnft::Activity"
+
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
 #include "detection.hpp"
 
 #define f 690.3
@@ -17,7 +23,7 @@ detection::detection():
 	initialized(false),
 	detector(250),
 	matcher(cv::NORM_HAMMING, true),
-	flann_matcher(){
+	flann_matcher(new cv::flann::LshIndexParams(6,12,1)){
 
 	K = *(cv::Mat_<float>(3,3) << f,0.0,px, 0.0,f,py, 0.0,0.0,1.0);
 	K_inv = K.inv();
@@ -36,11 +42,11 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 	std::vector<cv::KeyPoint> keypoints;
 	std::vector<cv::KeyPoint> nonmaxed_keypoints;
 	cv::Mat descriptors;
-	cv::Mat mask = cv::Mat::zeros(img.size(), CV_8UC1);
-	cv::Mat roi(mask, cv::Rect(220,140,500,340));
-	roi = cv::Scalar(255);
+	//cv::Mat mask = cv::Mat::zeros(img.size(), CV_8UC1);
+	//cv::Mat roi(mask, cv::Rect(220,140,380,200));
+	//roi = cv::Scalar(255);
 
-	detector.detect(img, keypoints, mask);
+	detector.detect(img, keypoints);
 
 	nonmaxed_keypoints = non_max_suppression(keypoints, 2);
 
@@ -88,7 +94,10 @@ void detection::setup_initial_features(){
 
 bool detection::detect(cv::Mat& img){
 	// try to find and track the initial features in the given image
+	timespec tmp;
 
+	clock_gettime(CLOCK_MONOTONIC, &tmp);
+	long int start = tmp.tv_nsec;
 	if(!initialized){return false;}
 
 	std::vector<cv::KeyPoint> keypoints_new;
@@ -97,15 +106,25 @@ bool detection::detect(cv::Mat& img){
 	std::vector<cv::DMatch> matches;
 
 	detector.detect(img, keypoints_new);
+
+	clock_gettime(CLOCK_MONOTONIC, &tmp);
+	long int features = tmp.tv_nsec;
+
 	detector.compute(img, keypoints_new, descriptors_new);
+
+	clock_gettime(CLOCK_MONOTONIC, &tmp);
+	long int extractor = tmp.tv_nsec;
 
 	if(keypoints_new.size() == 0 or !initialized){
 		// no features detected or not yet initialized
 		return false;
 	}
 
-	matcher.match(initial_descriptors[0], descriptors_new, matches);
-	//flann_matcher.match(initial_descriptors[0], descriptors_new, matches);
+	//matcher.match(initial_descriptors[0], descriptors_new, matches);
+	flann_matcher.match(initial_descriptors[0], descriptors_new, matches);
+
+	clock_gettime(CLOCK_MONOTONIC, &tmp);
+	long int match = tmp.tv_nsec;
 
 	if(matches.size() < 10){
 		return false;
@@ -123,6 +142,11 @@ bool detection::detect(cv::Mat& img){
 	}
 
 	homography = cv::findHomography(initial_pts, new_pts, CV_RANSAC);
+
+	clock_gettime(CLOCK_MONOTONIC, &tmp);
+	long int hg = tmp.tv_nsec;
+
+	LOGD("ft: %d, ext: %d, mt: %d, hg: %d", (features - start)/1000000, (extractor - features)/1000000, (match - extractor)/1000000, (hg - match)/1000000);
 
 //	cv::RotatedRect box = cv::minAreaRect(cv::Mat(initial_pts));
 //	cv::Point2f vertices[4], dst[4];
@@ -167,7 +191,7 @@ void detection::warp_rectangle(cv::Mat& img){
 
 void detection::show_target_rectangle(cv::Mat& img, cv::Point2i top_left, cv::Point2i bottom_right){
 	//add targeting rectangle for initial acquisition
-	cv::rectangle(img, top_left, bottom_right, cv::Scalar(100,100,100,100), 2);
+	//cv::rectangle(img, top_left, bottom_right, cv::Scalar(100,100,100,100), 2);
 };
 
 void detection::show_features(cv::Mat& img, std::vector<cv::KeyPoint>& points){
@@ -231,7 +255,7 @@ std::vector<cv::KeyPoint> detection::non_max_suppression(std::vector<cv::KeyPoin
 					std::abs( (*cur_it).pt.x - (*cmp_it).pt.x ) > max_dist ||
 					std::abs( (*cur_it).pt.y - (*cmp_it).pt.y ) > max_dist ||
 					(*cur_it).response > (*cmp_it).response ||
-					(*cur_it).octave == (*cmp_it).octave) {
+					(*cur_it).octave != (*cmp_it).octave) {
 				continue;
 			}
 			else{
