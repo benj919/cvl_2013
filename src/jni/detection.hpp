@@ -15,7 +15,14 @@ public:
     std::vector<cv::KeyPoint> initial_keypoints;
     std::vector<cv::Mat> initial_descriptors;
     std::vector<cv::Mat> raw_descriptors;
+
     cv::Point2i previous_location;
+    std::vector<int> pts_index;
+    cv::Mat prev_img;
+    std::vector<cv::Point2f> last_pts, current_pts;
+    int skipped_frames;
+    bool redetection;
+
     cv::Mat homography;
     bool initialized;
     cv::Mat K, K_inv;
