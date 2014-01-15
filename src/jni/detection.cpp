@@ -110,10 +110,14 @@ void detection::setup_initial_features(){
 bool detection::detect(cv::Mat& img){
 	// try to find and track the initial features in the given image
 	timespec tmp;
-	bool KLT = true;
 
 	if(!initialized)
 		{return false;}
+
+	if(skipped_frames > 2 || last_pts.size() < 25){
+		redetection = true;
+		skipped_frames = 0;
+	}
 
 	clock_gettime(CLOCK_MONOTONIC, &tmp);
 	long int start = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
@@ -171,6 +175,9 @@ bool detection::detect(cv::Mat& img){
 
 		LOGD("ft: %d, ext: %d, mt: %d, hg: %d", features - start, extractor - features, match - extractor, hg - match);
 
+		last_pts = current_pts;
+		img.copyTo(prev_img);
+
 		redetection = false;
 	}
 	else{
@@ -180,29 +187,41 @@ bool detection::detect(cv::Mat& img){
 		std::vector<float> error;
 		std::vector<cv::Point2f> prev_pts, next_pts;
 		std::vector<int> tmp_index;
-		cv::KeyPoint* tmp_kp;
+		int num_pts = 0;
+		float total_error = 0.0;
 
 		cv::calcOpticalFlowPyrLK(prev_img, img, last_pts, current_pts, status, error);
 
 		for(int i=0; i<last_pts.size();i++){
 			if(status[i]){
-				tmp_kp = &initial_keypoints[pts_index[i]];
+				cv::KeyPoint& tmp_kp = initial_keypoints[pts_index[i]];
 				tmp_index.push_back(pts_index[i]);
-				prev_pts.push_back(tmp_kp->pt);
+				prev_pts.push_back(tmp_kp.pt);
 				next_pts.push_back(current_pts[i]);
+				num_pts++;
+				total_error += error[i];
 			}
 		}
 
+//		if(total_error/num_pts > 1.0){
+//			// bad detection
+//			skipped_frames++;
+//			return false;
+//		}
+
 		pts_index = tmp_index;
-		last_pts = prev_pts;
-		current_pts = next_pts;
+		last_pts = next_pts;
 
 		clock_gettime(CLOCK_MONOTONIC, &tmp);
 		long int klt_time = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
 
 		if(last_pts.size() > 4){
-			homography = cv::findHomography(last_pts, current_pts, CV_RANSAC);
+			homography = cv::findHomography(prev_pts, next_pts, CV_RANSAC);
 		}
+		else{
+			return false;
+		}
+
 		clock_gettime(CLOCK_MONOTONIC, &tmp);
 		long int hg = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
 
@@ -240,14 +259,14 @@ void detection::warp_rectangle(cv::Mat& img){
 	cv::line(img, dst[2], dst[3], color,2);
 	cv::line(img, dst[3], dst[0], color,2);
 
-	cv::Mat rvec, tvec, dist_coeffs;
-	rvec.zeros(3,1,cv::DataType<float>::type);
-	tvec.zeros(3,1,cv::DataType<float>::type);
-	dist_coeffs.zeros(4,1,cv::DataType<float>::type);
+	//cv::Mat rvec, tvec, dist_coeffs;
+	//rvec.zeros(3,1,cv::DataType<float>::type);
+	//tvec.zeros(3,1,cv::DataType<float>::type);
+	//dist_coeffs.zeros(4,1,cv::DataType<float>::type);
 
-	cv::Mat K = (cv::Mat_<double>(3,3) << 	1.0, 0.0, 0.0,
-											0.0, 1.0, 0.0,
-											0.0, 0.0, 1.0);
+	//cv::Mat K = (cv::Mat_<double>(3,3) << 	1.0, 0.0, 0.0,
+	//										0.0, 1.0, 0.0,
+	//										0.0, 0.0, 1.0);
 	//std::vector<cv::Point3f> base =
 
 	//cv::solvePnP()
