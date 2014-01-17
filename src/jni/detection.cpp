@@ -34,13 +34,14 @@ detection::detection():
 	//set_up_house();
 	homography = cv::Mat::eye(3,3, CV_32FC1);
 	prev_img = cv::Mat(640,480, CV_8UC1);
+	orig_img = cv::Mat(640,480, CV_8UC3);
 };
 
 detection::~detection() {
 };
 
 
-void detection::extract_and_add_raw_features(cv::Mat& img){
+void detection::extract_and_add_raw_features(cv::Mat& gr_img, cv::Mat& rgb_img){
 	// img should be a ROI-Matrix representing the center of the frame targeted for object recognition
 	// add descriptors to the initial raw set.
 	// call setup_initial_features to calculate the initial set of features from the raw collection
@@ -52,13 +53,14 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 	//roi = cv::Scalar(255);
 
 	//for KLT
-	img.copyTo(prev_img);
+	gr_img.copyTo(prev_img);
+	rgb_img.copyTo(orig_img);
 
-	detector.detect(img, keypoints);
+	detector.detect(gr_img, keypoints);
 
 	nonmaxed_keypoints = non_max_suppression(keypoints, 2);
 
-	detector.compute(img, nonmaxed_keypoints, descriptors);
+	detector.compute(gr_img, nonmaxed_keypoints, descriptors);
 
 	initial_keypoints = nonmaxed_keypoints;
 	raw_descriptors.push_back(descriptors);
@@ -114,7 +116,7 @@ bool detection::detect(cv::Mat& img){
 	if(!initialized)
 		{return false;}
 
-	if(skipped_frames > 2 || last_pts.size() < 25){
+	if(skipped_frames > 10 || last_pts.size() < 25){
 		redetection = true;
 		skipped_frames = 0;
 	}
@@ -178,7 +180,7 @@ bool detection::detect(cv::Mat& img){
 		last_pts = current_pts;
 		img.copyTo(prev_img);
 
-		redetection = false;
+		//redetection = false;
 	}
 	else{
 		// no redetection requested
@@ -208,6 +210,7 @@ bool detection::detect(cv::Mat& img){
 //			skipped_frames++;
 //			return false;
 //		}
+		skipped_frames++;
 
 		pts_index = tmp_index;
 		last_pts = next_pts;
@@ -246,10 +249,12 @@ void detection::warp_rectangle(cv::Mat& img){
 	std::vector<cv::Point2f> src(4);
 	std::vector<cv::Point2f> dst(4);
 
-	src[0] = cv::Point(640,480);
-	src[1] = cv::Point(640,1);
-	src[2] = cv::Point(1,1);
-	src[3] = cv::Point(1,480);
+	cv::Point2f p[4],q[4];
+
+	src[0] = cv::Point(1,1);
+	src[1] = cv::Point(1,480);
+	src[2] = cv::Point(640,480);
+	src[3] = cv::Point(640,1);
 
 	cv::perspectiveTransform(src, dst, homography);
 
@@ -258,6 +263,27 @@ void detection::warp_rectangle(cv::Mat& img){
 	cv::line(img, dst[1], dst[2], color,2);
 	cv::line(img, dst[2], dst[3], color,2);
 	cv::line(img, dst[3], dst[0], color,2);
+
+	q[0] = cv::Point2f(0.0, 0.0);
+	q[1] = cv::Point2f(0.0, orig_img.rows);
+
+	q[2] = cv::Point2f(orig_img.cols, orig_img.rows);
+	q[3] = cv::Point2f(orig_img.cols, 0.0);
+
+	p[0] = dst[0];
+	p[1] = dst[1];
+	p[2] = dst[2];
+	p[3] = dst[3];
+
+	cv::Mat perspMat = cv::getPerspectiveTransform(q,p);
+
+	cv::Mat overlay = cv::Mat::zeros(640,480,CV_8UC4);
+
+    cv::warpPerspective(orig_img,overlay,perspMat,cv::Size(orig_img.cols,orig_img.rows));
+    cv::Mat outlay1=cv::Mat::zeros(640,480,CV_8UC4);
+    cv::addWeighted( img, 0.5, overlay, 0.5, 0.0, img);
+
+
 
 	//cv::Mat rvec, tvec, dist_coeffs;
 	//rvec.zeros(3,1,cv::DataType<float>::type);
