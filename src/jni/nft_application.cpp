@@ -17,7 +17,7 @@ void nft_application::process_frame(cv::Mat& rgb, cv::Mat& gray){
 	cv::Mat homography;
 
     if (capt_frame){
-    	detector->extract_and_add_raw_features(gray);
+    	detector->extract_and_add_raw_features(gray, rgb);
     	capt_frame = false;
     	return;
     }

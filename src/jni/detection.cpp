@@ -1,6 +1,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#include <opencv2/video/tracking.hpp>
 #include "opencv2/calib3d/calib3d.hpp"
 #include <vector>
 
@@ -12,30 +13,35 @@
 
 #include "detection.hpp"
 
-#define f 690.3
-#define px 320.0
-#define py 240.0
 
 detection::detection():
 	initial_keypoints(0),
 	initial_descriptors(0),
+	last_pts(0),
+	current_pts(0),
 	raw_descriptors(0),
 	initialized(false),
+	redetection(true),
+	pts_index(0),
 	detector(250),
 	matcher(cv::NORM_HAMMING, true),
-	flann_matcher(new cv::flann::LshIndexParams(6,12,1)){
+	flann_matcher(new cv::flann::LshIndexParams(6,12,1)),
+	skipped_frames(0){
 
-	K = *(cv::Mat_<float>(3,3) << f,0.0,px, 0.0,f,py, 0.0,0.0,1.0);
-	K_inv = K.inv();
+	//K = *(cv::Mat_<float>(3,3) << f,0.0,px, 0.0,f,py, 0.0,0.0,1.0);
+	//K_inv = K.inv();
 	//set up wire house
 	//set_up_house();
+	homography = cv::Mat::eye(3,3, CV_32FC1);
+	prev_img = cv::Mat(640,480, CV_8UC1);
+	orig_img = cv::Mat(640,480, CV_8UC3);
 };
 
 detection::~detection() {
 };
 
 
-void detection::extract_and_add_raw_features(cv::Mat& img){
+void detection::extract_and_add_raw_features(cv::Mat& gr_img, cv::Mat& rgb_img){
 	// img should be a ROI-Matrix representing the center of the frame targeted for object recognition
 	// add descriptors to the initial raw set.
 	// call setup_initial_features to calculate the initial set of features from the raw collection
@@ -46,15 +52,25 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 	//cv::Mat roi(mask, cv::Rect(220,140,380,200));
 	//roi = cv::Scalar(255);
 
-	detector.detect(img, keypoints);
+	//for KLT
+	gr_img.copyTo(prev_img);
+	rgb_img.copyTo(orig_img);
+
+	detector.detect(gr_img, keypoints);
 
 	nonmaxed_keypoints = non_max_suppression(keypoints, 2);
 
-	detector.compute(img, nonmaxed_keypoints, descriptors);
+	detector.compute(gr_img, nonmaxed_keypoints, descriptors);
 
 	initial_keypoints = nonmaxed_keypoints;
 	raw_descriptors.push_back(descriptors);
 
+	//for KLT
+	last_pts.clear();
+	for(int i=0; i<initial_keypoints.size(); i++){
+		cv::KeyPoint& tmp = initial_keypoints[i];
+		last_pts.push_back(tmp.pt);
+	}
 	// for debugging
 	setup_initial_features();
 };
@@ -62,6 +78,7 @@ void detection::extract_and_add_raw_features(cv::Mat& img){
 void detection::setup_initial_features(){
 	// calculate the set of initial features (descriptors only) from the raw feature sets
 	// Useless right now, we just take the first frame.
+
 	std::vector<std::vector<cv::DMatch> > matches;
 	initialized = true;
 	if(raw_descriptors.size() == 0){
@@ -96,57 +113,126 @@ bool detection::detect(cv::Mat& img){
 	// try to find and track the initial features in the given image
 	timespec tmp;
 
-	clock_gettime(CLOCK_MONOTONIC, &tmp);
-	long int start = tmp.tv_nsec;
-	if(!initialized){return false;}
+	if(!initialized)
+		{return false;}
 
-	std::vector<cv::KeyPoint> keypoints_new;
-	cv::Mat result;
-	cv::Mat descriptors_new;
-	std::vector<cv::DMatch> matches;
-
-	detector.detect(img, keypoints_new);
-
-	clock_gettime(CLOCK_MONOTONIC, &tmp);
-	long int features = tmp.tv_nsec;
-
-	detector.compute(img, keypoints_new, descriptors_new);
-
-	clock_gettime(CLOCK_MONOTONIC, &tmp);
-	long int extractor = tmp.tv_nsec;
-
-	if(keypoints_new.size() == 0 or !initialized){
-		// no features detected or not yet initialized
-		return false;
+	if(skipped_frames > 10 || last_pts.size() < 25){
+		redetection = true;
+		skipped_frames = 0;
 	}
 
-	//matcher.match(initial_descriptors[0], descriptors_new, matches);
-	flann_matcher.match(initial_descriptors[0], descriptors_new, matches);
-
 	clock_gettime(CLOCK_MONOTONIC, &tmp);
-	long int match = tmp.tv_nsec;
+	long int start = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
 
-	if(matches.size() < 10){
-		return false;
+	if(redetection){
+		// klt has lost track or none to be found
+		// go with full feature detection extraction
+
+		std::vector<cv::KeyPoint> keypoints_new;
+		cv::Mat result;
+		cv::Mat descriptors_new;
+		std::vector<cv::DMatch> matches;
+
+		detector.detect(img, keypoints_new);
+
+		clock_gettime(CLOCK_MONOTONIC, &tmp);
+		long int features = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
+
+		detector.compute(img, keypoints_new, descriptors_new);
+
+		clock_gettime(CLOCK_MONOTONIC, &tmp);
+		long int extractor = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
+
+		if(keypoints_new.size() == 0 or !initialized){
+			// no features detected
+			return false;
+		}
+
+		//matcher.match(initial_descriptors[0], descriptors_new, matches);
+		flann_matcher.match(initial_descriptors[0], descriptors_new, matches);
+
+		clock_gettime(CLOCK_MONOTONIC, &tmp);
+		long int match = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
+
+		if(matches.size() < 10){
+			return false;
+		}
+		pts_index.clear();
+		last_pts.clear();
+		current_pts.clear();
+
+		for(int i = 0; i < matches.size(); i++ ){
+			cv::DMatch& d = matches[i];
+			cv::KeyPoint& init_pt = initial_keypoints[d.queryIdx];
+			cv::KeyPoint& new_pt = keypoints_new[d.trainIdx];
+			pts_index.push_back(d.queryIdx);
+			last_pts.push_back(init_pt.pt);
+			current_pts.push_back(new_pt.pt);
+		}
+
+		homography = cv::findHomography(last_pts, current_pts, CV_RANSAC);
+
+		clock_gettime(CLOCK_MONOTONIC, &tmp);
+		long int hg = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
+
+		LOGD("ft: %d, ext: %d, mt: %d, hg: %d", features - start, extractor - features, match - extractor, hg - match);
+
+		last_pts = current_pts;
+		img.copyTo(prev_img);
+
+		//redetection = false;
 	}
+	else{
+		// no redetection requested
+		// go with klt tracker
+		std::vector<uchar> status;
+		std::vector<float> error;
+		std::vector<cv::Point2f> prev_pts, next_pts;
+		std::vector<int> tmp_index;
+		int num_pts = 0;
+		float total_error = 0.0;
 
-	std::vector<cv::Point2f> initial_pts;
-	std::vector<cv::Point2f> new_pts;
+		cv::calcOpticalFlowPyrLK(prev_img, img, last_pts, current_pts, status, error);
 
-	for(int i = 0; i < matches.size(); i++ ){
-		cv::DMatch& d = matches[i];
-		cv::KeyPoint& init_pt = initial_keypoints[d.queryIdx];
-		cv::KeyPoint& new_pt = keypoints_new[d.trainIdx];
-		initial_pts.push_back(init_pt.pt);
-		new_pts.push_back(new_pt.pt);
+		for(int i=0; i<last_pts.size();i++){
+			if(status[i]){
+				cv::KeyPoint& tmp_kp = initial_keypoints[pts_index[i]];
+				tmp_index.push_back(pts_index[i]);
+				prev_pts.push_back(tmp_kp.pt);
+				next_pts.push_back(current_pts[i]);
+				num_pts++;
+				total_error += error[i];
+			}
+		}
+
+//		if(total_error/num_pts > 1.0){
+//			// bad detection
+//			skipped_frames++;
+//			return false;
+//		}
+		skipped_frames++;
+
+		pts_index = tmp_index;
+		last_pts = next_pts;
+
+		clock_gettime(CLOCK_MONOTONIC, &tmp);
+		long int klt_time = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
+
+		if(last_pts.size() > 4){
+			homography = cv::findHomography(prev_pts, next_pts, CV_RANSAC);
+		}
+		else{
+			return false;
+		}
+
+		clock_gettime(CLOCK_MONOTONIC, &tmp);
+		long int hg = tmp.tv_sec*1000 + tmp.tv_nsec/1000000;
+
+		img.copyTo(prev_img);
+
+		LOGD("ft: %d, hg: %d", klt_time - start, hg - klt_time);
+
 	}
-
-	homography = cv::findHomography(initial_pts, new_pts, CV_RANSAC);
-
-	clock_gettime(CLOCK_MONOTONIC, &tmp);
-	long int hg = tmp.tv_nsec;
-
-	LOGD("ft: %d, ext: %d, mt: %d, hg: %d", (features - start)/1000000, (extractor - features)/1000000, (match - extractor)/1000000, (hg - match)/1000000);
 
 //	cv::RotatedRect box = cv::minAreaRect(cv::Mat(initial_pts));
 //	cv::Point2f vertices[4], dst[4];
@@ -163,27 +249,50 @@ void detection::warp_rectangle(cv::Mat& img){
 	std::vector<cv::Point2f> src(4);
 	std::vector<cv::Point2f> dst(4);
 
-	src[0] = cv::Point(480,320);
-	src[1] = cv::Point(480,160);
-	src[2] = cv::Point(240,160);
-	src[3] = cv::Point(240,320);
+	cv::Point2f p[4],q[4];
+
+	src[0] = cv::Point(1,1);
+	src[1] = cv::Point(1,480);
+	src[2] = cv::Point(640,480);
+	src[3] = cv::Point(640,1);
 
 	cv::perspectiveTransform(src, dst, homography);
 
-	cv::Scalar color(125,125,0);
-	cv::line(img, dst[0], dst[1], color);
-	cv::line(img, dst[1], dst[2], color);
-	cv::line(img, dst[2], dst[3], color);
-	cv::line(img, dst[3], dst[0], color);
+	cv::Scalar color(0,254,0);
+	cv::line(img, dst[0], dst[1], color,2);
+	cv::line(img, dst[1], dst[2], color,2);
+	cv::line(img, dst[2], dst[3], color,2);
+	cv::line(img, dst[3], dst[0], color,2);
 
-	cv::Mat rvec, tvec, dist_coeffs;
-	rvec.zeros(3,1,cv::DataType<float>::type);
-	tvec.zeros(3,1,cv::DataType<float>::type);
-	dist_coeffs.zeros(4,1,cv::DataType<float>::type);
+	q[0] = cv::Point2f(0.0, 0.0);
+	q[1] = cv::Point2f(0.0, orig_img.rows);
 
-	cv::Mat K = (cv::Mat_<double>(3,3) << 	1.0, 0.0, 0.0,
-											0.0, 1.0, 0.0,
-											0.0, 0.0, 1.0);
+	q[2] = cv::Point2f(orig_img.cols, orig_img.rows);
+	q[3] = cv::Point2f(orig_img.cols, 0.0);
+
+	p[0] = dst[0];
+	p[1] = dst[1];
+	p[2] = dst[2];
+	p[3] = dst[3];
+
+	cv::Mat perspMat = cv::getPerspectiveTransform(q,p);
+
+	cv::Mat overlay = cv::Mat::zeros(640,480,CV_8UC4);
+
+    cv::warpPerspective(orig_img,overlay,perspMat,cv::Size(orig_img.cols,orig_img.rows));
+    cv::Mat outlay1=cv::Mat::zeros(640,480,CV_8UC4);
+    cv::addWeighted( img, 0.5, overlay, 0.5, 0.0, img);
+
+
+
+	//cv::Mat rvec, tvec, dist_coeffs;
+	//rvec.zeros(3,1,cv::DataType<float>::type);
+	//tvec.zeros(3,1,cv::DataType<float>::type);
+	//dist_coeffs.zeros(4,1,cv::DataType<float>::type);
+
+	//cv::Mat K = (cv::Mat_<double>(3,3) << 	1.0, 0.0, 0.0,
+	//										0.0, 1.0, 0.0,
+	//										0.0, 0.0, 1.0);
 	//std::vector<cv::Point3f> base =
 
 	//cv::solvePnP()
