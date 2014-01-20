@@ -1,7 +1,79 @@
+\documentclass[10pt,conference,compsocconf]{IEEEtran}
+
+%\usepackage{times}
+%\usepackage{balance}
+\usepackage{url}
+\usepackage{graphicx}	% For figure environment
+
+
 \begin{document}
+\title{Natural Feature Detection for Augmented Reality}
 
-\begin{titlepage}
-\title{Natural Feature Detection and Tracking}
-\end{titlepage}
+\author{
+  Benjamin Flueck, Hongyi Liu\\
+  Department of Computer Science, ETH Zurich, Switzerland\\
+}
 
+\maketitle
+
+\begin{abstract}
+The Abstract goes here
+\end{abstract}
+
+\section{Introduction}
+
+With the proliferation of powerful mobile phones and their cameras augmented reality (AR) application are now on the verge on becoming ubiquitous. While AR applications existed for along time and can be ported to mobile platforms, many of them rely on predefined patterns. While this is perfectly fine research purposes in a lab it is a considerable inconvenience for every day applications. The goal of this project is therefore to implement a simple augmented reality application that explores the possibility of using arbitrary patterns while considering the limitations of mobile phones.
+
+\section{Method}
+
+Our Application uses a simple combination of a feature detection \& extraction schema supplemented by a KLT tracker. In a first step the application acquires an initial image which should be sufficiently textured. We then do a feature extraction on this image as a starting point for the KLT tracking. As the KLT tracker is limited to  tracking feature points from one frame to the next it is only suitable for tracking already known feature points and not for recovery or detection of the target object. We therefore supply the application with a simple re-detection procedure. This is done by taking a frame and proceeding with a feature detection on it. The features are then directly matched with the ones from the initial image. While the KLT tracker is faster than a full feature detection, extraction, and matching cycle it is prone to loosing track of features and drifting over time. Our application therefore interlaces the KLT tracking with regular re-detection cycles when either the quality or the number of the tracked features drop below certain thresholds. In the end this results in a fast and never the less robust tracking of the initial image.
+
+\subsection{Feature Selection and Matching}
+In order to be used for our approach the features for the tracking and re-detection have to full-fill certain criteria. They have to be rotation and preferably be scaling invariant and they must be fast to compute. While the rotational invariance is a must the scaling invariant can be substituted with computing the same features on different scales on the image. Due to the relatively small number of features we are operating on the matching of those features can be computed with a straight forward brute force approach as this takes an insignificant time compared to the feature detection and extraction. We have compared the following features for their computational effort and quality of matches they yield; ORB, ...
+
+--> Feature detection and computation time <--
+
+\subsection{KLT}
+
+The KLT tracker is a method based on the idea of sparse optical flow. Given a set of initial points it tries to find these points in their vicinity in the subsequent frame. As this is a locally confined method it offers distinct advantages and drawbacks.
+
+\section{Implementation}
+
+\section{Results}
+
+Our results go here
+
+
+\subsubsection{Equations}
+
+There are three types of equations available: inline equations, for
+example $y=mx + c$, which appear in the text, unnumbered equations
+$$y=mx + c,$$
+which are presented on a line on its own, and numbered equations
+\begin{equation}
+  \label{eq:linear}
+  y = mx + c
+\end{equation}
+which you can refer to at a later point (Equation~(\ref{eq:linear})).
+
+\subsubsection{Tables and Figures}
+
+Tables and figures are ``floating'' objects, which means that the text
+can flow around it.
+Note
+that \texttt{figure*} and \texttt{table*} cause the corresponding
+figure or table to span both columns.
+
+
+
+\section{Summary}
+
+A short summary of what we have found.
+
+\section*{Acknowledgements}
+The author thanks Christian Sigg for his careful reading and helpful
+suggestions.
+
+\bibliographystyle{IEEEtran}
+\bibliography{nft}
 \end{document}
