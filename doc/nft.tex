@@ -4,7 +4,10 @@
 %\usepackage{balance}
 \usepackage{url}
 \usepackage{graphicx}	% For figure environment
-
+\usepackage{caption}
+\usepackage{subcaption}
+% create a shortcut to typeset table headings
+\newcommand\tabhead[1]{\small\textbf{#1}}
 
 \begin{document}
 \title{Natural Feature Detection for Augmented Reality}
@@ -71,16 +74,22 @@ Our approach is implemented as an android application written mostly in c++ and 
 \section{Results}
 %Our results go here
 
-\section{Lessons learned}
+\section{Problems and solutions}
 %problems and proposed solutions
+During our project, we encountered different kinds of difficulties. Here are some of them:\\
+At the beginning, we have problem with choosing feature detection method. There are lot of different kinds of feature detect and extract method, while not all of them can applied on our application. To understand what we need, we conduct an experiment to analysis among them, the description of our experiment added in appendix. We found result that not all feature extractors and detectors are available for mobile application. For instance, SIFT and SURF is not available due to patent reason. After the experiment and compare, we select ORB feature detector and extractor, which compromise run time and performance.\\
+
+The correctness of matching, is another issue which cause difficulty at the beginning. We found that brute force matcher will give wrong matches as matching result. We then apply standard feature tracking and pose estimation pipe line. We process the result of matching and feed to homograph estimation function. In this pipeline, we make use of existing function and solve the problem.\\
+
+Our application also suffered from the problem of delay and low frame rate. To solve the problem, we conduct an experiment to analysis the correlation between low frame rate and motion blur. The result is positive, the detail could be found in appendix. Then we also consider KLT tracking method to increase frame rate. It also shows a good result.\\
 
 \section{Future Work}
 %how to improve this mess
-
+There are different type of works could be done in the future. One of them is to further increase frame rate. The other approach could start from homograph, the homograph we computed still have vibering problem, if they could be tracked, and filtered, this problem could be better. Also, the current application still use warped image for visualization, which could be implement using virtual reality. For example, a house or teapot.
 
 \section{Summary}
 
-A short summary of what we have found.
+In this project, we finish a natural feature tracking android application using c++. Our Application uses a combination of a feature detection \& extraction schema supplemented by a KLT tracker. Different experiments have been conducted to solve problems such as feature selection and blurred problem. Result show that the application have a acceptable frame rate and performance.
 
 \section*{Acknowledgements}
 The authors thank Amael Dalaunoy, Kalin Kolev, and Lorenz Meier for their support throughout the duration of this project. 
@@ -90,8 +99,194 @@ The authors thank Amael Dalaunoy, Kalin Kolev, and Lorenz Meier for their suppor
 
 \newpage
 \appendix
-Experiments:\\\\
+\subsection{Experiment of different feature selection}
 %Here go the experiments
+Due to the relatively small number of features we are operating on, the matching of those features can be computed with a straight forward brute force approach as this takes an insignificant time compared to the feature detection and extraction. \\
+In this sense, we need to investigate different types of feature detection and feature extraction methods. We have compared the following features for their computational effort and quality of matches they yield; ORB, Briskd, Fast, Star, Good, Dense\\
+We conduct two experiment as below:
+
+\subsubsection{First experiment, Run time evaluation}
+
+For this part of the study, we have an experimental setup that runs on an Android-capable phone system. We will evaluate the time consumption for feature detection (detect step) and feature description (compute step). We will load five different images from storage, and for each image, we will run the descriptor five times, creating 25 set of data for each feature detector/descriptor. The final results were the average of data points. Here we try to use all feature detectors that can run on android.\\
+Result: (feature detector)\\
+
+\begin{table}[!ht]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+     & Orb&Briskd&Fast&Star&good&dense\\
+    \hline
+    Time&50.8ms&73.2ms&12.7ms&308.6ms&144.8ms&5.4ms \\
+    \hline
+  \end{tabular}
+  \caption{different feature detection method time consumption compare.}
+\end{table}
+ 
+Result: (feature descriptor)\\
+
+\begin{table}[!ht]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+     & Orb&Briskd&Brief\\
+    \hline
+    Time&71.4ms&11.4ms&22.5ms \\
+    \hline
+  \end{tabular}
+  \caption{different feature extraction method time consumption compare.}
+\end{table}
+
+From this part, we learned that method star, good are too slow for our approach.\\
+
+\subsubsection{Second experiment, performance evaluation}
+
+Here we will analysis three different type of feature detectors in this section, respecitively: orb, briskd, and fast, and three different kinds of descriptors: orb, briskd, and brief. We sought to work with various combinations of detectors and descriptors on one pair of images, and display the result on the image pair. \\
+
+
+
+\begin{table}[!ht]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \tabhead{Det-des}&
+    \multicolumn{1}{|p{0.15\columnwidth}|}{\centering\tabhead{Keypoints from pic1}} &
+    \multicolumn{1}{|p{0.15\columnwidth}|}{\centering\tabhead{Keypoints from pic2}}&
+    \multicolumn{1}{|p{0.15\columnwidth}|}{\centering\tabhead{Matches number}}&
+    \multicolumn{1}{|p{0.1\columnwidth}|}{\centering\tabhead{Inlier ratio}} \\
+    \hline
+    Orb-orb & 500 & 500 & 326 & 56\%\\
+    \hline
+    Orb-briskd & 499 & 498 & 324 & 60\%\\
+    \hline
+    Orb-brief & 500 & 500 & 244 &	55\%\\
+    \hline
+    Briskd-orb &	902 &	1164 &	598 &	21\%\\
+    \hline
+    Briskd-briskd &	903 &	1164 &	600 &	22\%\\
+    \hline
+    Briskd-brief &	902 &	1164 &	591 &	29\%\\
+    \hline
+    Fast-orb &	1428 &	2305 &	1209 &	43\%\\
+    \hline
+    Fast-briskd &	1433 &	2305	 &1109 &	45\%\\
+    \hline
+    Fast-brief &	1428 &	2305 &	1210 &	45\%\\
+    \hline
+  \end{tabular}
+  \caption{Perform evaluation of different feature detector and extractor.}
+  \label{tab:table1}
+\end{table}
+
+Illustrated below is the result picture we have obtained through the course of the experiment: within which, red circle corresponds to the keypoint found by the detector, green circles(smaller) represents matches, while blue circles(even smaller) correspond to inlier detected by findhomograph function.\\
+
+
+\begin{figure}[!ht]
+        \centering
+        \begin{subfigure}[b]{0.15\textwidth}
+                \includegraphics[width=\textwidth]{b}
+                \caption{briskd-briskd}
+                \label{fig:b}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.15\textwidth}
+                \includegraphics[width=\textwidth]{o}
+                \caption{Orb-orb}
+                \label{fig:o}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.15\textwidth}
+                \includegraphics[width=\textwidth]{f}
+                \caption{Fast-brief}
+                \label{fig:f}
+        \end{subfigure}
+        \caption{keypoints, matches, inliner result of different detectors and extractors}\label{fig:animals}
+\end{figure}
+
+We can clearly observe the differences of keypoints, matches, inlier points selected by different feature detectors.\\
+
+From the experiment above, we observe a correspondence between percentage of inlier ratio and the detector type, as a consequent, the detector and extractor ORB shall be our choice in later application.\\
+
+\subsection{Experiment Motion Blur}
+
+When we start camera, and move it, the blur effect will occur. The motion blur problem might cause by default setting of camera itself. It have a significant effect on our application. When ever motion blur appear, our estimate homo-graph will fail and frame rate will went low. To investigate what is the actual cause of low frame rate and homo-graph problem, we conduct an experiment.\\
+
+In this experiment, we will load 8 different image pairs into our setup, and get parameters from them.
+Five image pairs are normal, clear image. Three of them are different blurred images pairs(normal+blur and blur+blur). Then we will investigate the time consumption of keypoint detection, extraction, matching, homograph finding. The keypoints detected in both images will also be counted, as well as the matching number set up by brute force approach will be illustrated, at last, the inlier ratio computed by homograph will be considered.\\
+
+This is the result:\\
+
+\begin{table}[!ht]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \hline
+    \tabhead{ }&
+    \multicolumn{1}{|p{0.05\columnwidth}|}{\centering\tabhead{detect time}} &
+    \multicolumn{1}{|p{0.05\columnwidth}|}{\centering\tabhead{compute time}}&
+    \multicolumn{1}{|p{0.05\columnwidth}|}{\centering\tabhead{match time}}&
+    \multicolumn{1}{|p{0.05\columnwidth}|}{\centering\tabhead{find homo time}}&
+    \multicolumn{1}{|p{0.05\columnwidth}|}{\centering\tabhead{KP 1}}&
+    \multicolumn{1}{|p{0.05\columnwidth}|}{\centering\tabhead{KP 2}}&
+    \multicolumn{1}{|p{0.05\columnwidth}|}{\centering\tabhead{match number}}&
+    \multicolumn{1}{|p{0.05\columnwidth}|}{\centering\tabhead{inlier ratio}} \\
+    \hline
+    N1&	69.2ms&	74.6ms&	9.8ms&	8.4ms&	250&	250&	161&	67\%\\
+    \hline
+    N2&	48.6ms&	73.4ms&	3.2ms&	14.3ms&	250&	250&	153&	52\%\\
+    \hline
+    N3&	52.7ms&	66.8ms&	3.4ms&	9.3ms&	250&	250&	149&	51\%\\
+    \hline
+    N4&	56.4ms&	72.7ms&	1.9ms&	16.7ms&	250&	250&	154&	43\%\\
+    \hline
+    N5&	68.7ms&	87.0ms&	3.2ms&	7.9ms&	250&	250&	169&	53\%\\
+    \hline
+    N-b1&	36.2ms&	76.7ms&	5.5ms&	228.4ms&	246&	250&	128&	10\%\\
+    \hline
+    N-b2&	44.9ms&	70.6ms&	2.7ms&	256.9ms&	250&	250&	94&	7\%\\
+    \hline
+    B-b&	60.9ms&	109.3ms&	3.3ms&	258.9ms&	250&	246&	72&	9\%\\
+    \hline
+  \end{tabular}
+  \caption{N1-5 means normal image pairs, N-b means normal image and blurred image, B-b means blurred image pairs.}
+  \label{tab:table1}
+\end{table}
+
+\begin{figure}[!ht]
+        \centering
+        \begin{subfigure}[b]{0.2\textwidth}
+                \includegraphics[width=\textwidth]{badly2}
+                \caption{keypoint detected in normal image}
+                \label{fig:badly2}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.2\textwidth}
+                \includegraphics[width=\textwidth]{badly1}
+                \caption{keypoint detected in badly blurred image}
+                \label{fig:badly1}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \caption{keypoints detectd in different images}\label{fig:images}
+\end{figure}
+
+From the table and figures above, we can easily observe the correlation between inputted blurred image and time consuming of homograph computation, which also confirm our guess at beginning. We also observed that blurred image will substantially decrease inlier ratio, which will also cause problem for later processing. In this sense, we should try to avoid motion blur, and use method to decrease the effect when motion blur occur.
+
+\subsection{Kalman filter}
+
+The Kalman filter is an algorithm that uses a series of measurements observed over time, which will help us filter out noises. In our application, before we apply KLT filter, we have been try to apply kalman filter on estimated object and feature points.\\
+
+We did experiment of Kalman filter with Opencv implemented  function on computer side(see picture below).\\
+
+\begin{figure}[h!]
+  \centering
+    \reflectbox{%
+      \includegraphics[width=0.3\textwidth]{kalman}}
+  \caption{kalman filter experiment on computer side}
+\end{figure}
+
+We then fix our experiment of kalman filter with our application, but the result still not acceptable. At the end, we give up this approach and turn to KLT filter.
 
 \appendix
 Codebase:\\\\
@@ -101,16 +296,19 @@ Work distribution:\\\\
 %Here goes the work distribution
 \begin{tabular}{l l}
 Benjamin & Initial Framework \\
-& Feature detection \\
 & KLT usage \\
 & Homography estimation \\
 & Initial Visualization \\
 & Code for Runtime measurement\\
 \\
-Hongyi & Performance evaluation \\
+Hongyi 
 & Warped image visualization\\
+& Feature detection \\
+& Code and conduct of experiment\\
+& kalman filter\\
 \\
 Both & Inlier ratio for homography \\
+& Feature detection \\
 & Report\\
 \\
 \end{tabular} 

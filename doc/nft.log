@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.4.7)  21 JAN 2014 01:59
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.4.7)  21 JAN 2014 23:27
 entering extended mode
 **nft.tex
 (C:\NVPACK\OpenCV-2.4.5-Tegra-sdk-r2\cvl_2013\doc\nft.tex
@@ -173,18 +173,18 @@ Package: subcaption 2013/02/03 v1.1-62 Sub-captions (AR)
 LaTeX Warning: Label `tab:table1' multiply defined.
 
 )
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
  ("C:\Program Files (x86)\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count95
@@ -202,217 +202,253 @@ LaTeX Font Info:    ... okay on input line 14.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 22.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 21.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 39.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 39.
+ [1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
 
-Underfull \hbox (badness 10000) in paragraph at lines 43--45
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 79--81
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--83
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 84--85
+
+ []
+
+No file nft.bbl.
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 110--112
 
  []
 
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 48.
+(Font)              <8> on input line 115.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 48.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 48.
-LaTeX Font Info:    Try loading font information for OML+ptm on input line 52.
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\omlptm.fd"
-File: omlptm.fd 
-)
-LaTeX Font Info:    Font shape `OML/ptm/m/n' in size <8> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 52.
+(Font)              <6> on input line 115.
 
-Underfull \hbox (badness 10000) in paragraph at lines 58--59
+Overfull \hbox (0.71162pt too wide) in paragraph at lines 115--122
+ [][] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--126
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 72--73
+Underfull \hbox (badness 10000) in paragraph at lines 139--140
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 76--77
+Underfull \hbox (badness 10000) in paragraph at lines 143--144
 
  []
 
 
-Overfull \hbox (2.1953pt too wide) in paragraph at lines 85--85
+Overfull \hbox (2.1953pt too wide) in paragraph at lines 152--152
  []\OT1/ptm/b/n/9 Keypoints 
  []
 
 
-Overfull \hbox (2.1953pt too wide) in paragraph at lines 86--86
+Overfull \hbox (2.1953pt too wide) in paragraph at lines 153--153
  []\OT1/ptm/b/n/9 Keypoints 
  []
 
 
-Underfull \hbox (badness 4531) in paragraph at lines 113--114
+Underfull \hbox (badness 4531) in paragraph at lines 180--181
 \OT1/ptm/m/n/10 green cir-cles(smaller) rep-re-sents matches, while blue
  []
 
 
-Underfull \hbox (badness 2293) in paragraph at lines 113--114
+Underfull \hbox (badness 2293) in paragraph at lines 180--181
 \OT1/ptm/m/n/10 cir-cles(even smaller) cor-re-spond to in-lier de-tected by
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 113--114
+Underfull \hbox (badness 10000) in paragraph at lines 180--181
 
  []
 
-[1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
-
-
-]
-<b.jpg, id=10, 1846.9pt x 3276.24pt>
+<b.jpg, id=17, 1846.9pt x 3276.24pt>
 File: b.jpg Graphic file (type jpg)
  <use b.jpg>
-Package pdftex.def Info: b.jpg used on input line 119.
+Package pdftex.def Info: b.jpg used on input line 186.
 (pdftex.def)             Requested size: 75.8804pt x 134.57666pt.
 
-<o.jpg, id=11, 1846.9pt x 3276.24pt>
+<o.jpg, id=18, 1846.9pt x 3276.24pt>
 File: o.jpg Graphic file (type jpg)
  <use o.jpg>
-Package pdftex.def Info: o.jpg used on input line 126.
+Package pdftex.def Info: o.jpg used on input line 193.
 (pdftex.def)             Requested size: 75.8804pt x 134.57666pt.
 
-<f.jpg, id=12, 1846.9pt x 3276.24pt>
+<f.jpg, id=19, 1846.9pt x 3276.24pt>
 File: f.jpg Graphic file (type jpg)
  <use f.jpg>
-Package pdftex.def Info: f.jpg used on input line 133.
+Package pdftex.def Info: f.jpg used on input line 200.
 (pdftex.def)             Requested size: 75.8804pt x 134.57666pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 140--141
+Underfull \hbox (badness 10000) in paragraph at lines 207--208
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 142--143
+Underfull \hbox (badness 10000) in paragraph at lines 209--210
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 146--147
+Underfull \hbox (badness 10000) in paragraph at lines 213--214
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 148--150
+Underfull \hbox (badness 10000) in paragraph at lines 215--217
+
+ []
+
+[3 <C:/NVPACK/OpenCV-2.4.5-Tegra-sdk-r2/cvl_2013/doc/b.jpg> <C:/NVPACK/OpenCV-2
+.4.5-Tegra-sdk-r2/cvl_2013/doc/o.jpg> <C:/NVPACK/OpenCV-2.4.5-Tegra-sdk-r2/cvl_
+2013/doc/f.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 218--219
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 151--152
-
- []
-
-
-Overfull \hbox (10.78938pt too wide) in paragraph at lines 158--158
+Overfull \hbox (10.78938pt too wide) in paragraph at lines 225--225
  []\OT1/ptm/b/n/9 detect 
  []
 
 
-Overfull \hbox (4.79547pt too wide) in paragraph at lines 158--158
+Overfull \hbox (4.79547pt too wide) in paragraph at lines 225--225
  \OT1/ptm/b/n/9 time| 
  []
 
 
-Overfull \hbox (20.79738pt too wide) in paragraph at lines 159--159
+Overfull \hbox (20.79738pt too wide) in paragraph at lines 226--226
  []\OT1/ptm/b/n/9 compute 
  []
 
 
-Overfull \hbox (4.79547pt too wide) in paragraph at lines 159--159
+Overfull \hbox (4.79547pt too wide) in paragraph at lines 226--226
  \OT1/ptm/b/n/9 time| 
  []
 
 
-Overfull \hbox (11.7975pt too wide) in paragraph at lines 160--160
+Overfull \hbox (11.7975pt too wide) in paragraph at lines 227--227
  []\OT1/ptm/b/n/9 match 
  []
 
 
-Overfull \hbox (4.79547pt too wide) in paragraph at lines 160--160
+Overfull \hbox (4.79547pt too wide) in paragraph at lines 227--227
  \OT1/ptm/b/n/9 time| 
  []
 
 
-Overfull \hbox (2.8155pt too wide) in paragraph at lines 161--161
+Overfull \hbox (2.8155pt too wide) in paragraph at lines 228--228
  []\OT1/ptm/b/n/9 find 
  []
 
 
-Overfull \hbox (9.3046pt too wide) in paragraph at lines 161--161
+Overfull \hbox (9.3046pt too wide) in paragraph at lines 228--228
  \OT1/ptm/b/n/9 homo 
  []
 
 
-Overfull \hbox (4.79547pt too wide) in paragraph at lines 161--161
+Overfull \hbox (4.79547pt too wide) in paragraph at lines 228--228
  \OT1/ptm/b/n/9 time| 
  []
 
 
-Overfull \hbox (11.7975pt too wide) in paragraph at lines 164--164
+Overfull \hbox (11.7975pt too wide) in paragraph at lines 231--231
  []\OT1/ptm/b/n/9 match 
  []
 
 
-Overfull \hbox (8.3055pt too wide) in paragraph at lines 164--164
+Overfull \hbox (8.3055pt too wide) in paragraph at lines 231--231
  \OT1/ptm/b/n/9 num- 
  []
 
 
-Overfull \hbox (0.79951pt too wide) in paragraph at lines 164--164
+Overfull \hbox (0.79951pt too wide) in paragraph at lines 231--231
  \OT1/ptm/b/n/9 ber| 
  []
 
 
-Overfull \hbox (8.30524pt too wide) in paragraph at lines 165--165
+Overfull \hbox (8.30524pt too wide) in paragraph at lines 232--232
  []\OT1/ptm/b/n/9 inlier 
  []
 
 
-Overfull \hbox (29.12495pt too wide) in paragraph at lines 155--184
+Overfull \hbox (29.12495pt too wide) in paragraph at lines 222--251
  [][] 
  []
 
-<badly2.jpg, id=13, 361.35pt x 642.14906pt>
+<badly2.jpg, id=23, 361.35pt x 642.14906pt>
 File: badly2.jpg Graphic file (type jpg)
  <use badly2.jpg>
-Package pdftex.def Info: badly2.jpg used on input line 191.
+Package pdftex.def Info: badly2.jpg used on input line 258.
 (pdftex.def)             Requested size: 101.17645pt x 179.8005pt.
 
-Underfull \hbox (badness 3668) in paragraph at lines 192--192
+Underfull \hbox (badness 3668) in paragraph at lines 259--259
 []\OT1/ptm/m/n/9 (a) |key-point de-tected in
  []
 
-<badly1.jpg, id=14, 361.35pt x 642.14906pt>
+<badly1.jpg, id=24, 361.35pt x 642.14906pt>
 File: badly1.jpg Graphic file (type jpg)
  <use badly1.jpg>
-Package pdftex.def Info: badly1.jpg used on input line 198.
+Package pdftex.def Info: badly1.jpg used on input line 265.
 (pdftex.def)             Requested size: 101.17645pt x 179.8005pt.
 
-Underfull \hbox (badness 3281) in paragraph at lines 199--199
+Underfull \hbox (badness 3281) in paragraph at lines 266--266
 []\OT1/ptm/m/n/9 (b) |key-point de-tected in
  []
 
-[2 <C:/NVPACK/OpenCV-2.4.5-Tegra-sdk-r2/cvl_2013/doc/b.jpg> <C:/NVPACK/OpenCV-2
-.4.5-Tegra-sdk-r2/cvl_2013/doc/o.jpg> <C:/NVPACK/OpenCV-2.4.5-Tegra-sdk-r2/cvl_
-2013/doc/f.jpg> <C:/NVPACK/OpenCV-2.4.5-Tegra-sdk-r2/cvl_2013/doc/badly2.jpg> <
-C:/NVPACK/OpenCV-2.4.5-Tegra-sdk-r2/cvl_2013/doc/badly1.jpg>]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 224.
 
-Underfull \hbox (badness 10000) in paragraph at lines 230--232
+Underfull \hbox (badness 10000) in paragraph at lines 278--279
 
  []
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 238.
 
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
-File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-)
-No file nft.bbl.
+Underfull \hbox (badness 2556) in paragraph at lines 280--281
+[]\OT1/ptm/m/n/10 We did ex-per-i-ment of Kalman fil-ter with Opencv
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 280--281
+
+ []
+
+<kalman.jpg, id=25, 608.2725pt x 463.7325pt>
+File: kalman.jpg Graphic file (type jpg)
+ <use kalman.jpg>
+Package pdftex.def Info: kalman.jpg used on input line 285.
+(pdftex.def)             Requested size: 151.76854pt x 115.69933pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 292--293
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 292--293
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 295--315
+
+ []
+
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -424,33 +460,35 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[3
-
-] (C:\NVPACK\OpenCV-2.4.5-Tegra-sdk-r2\cvl_2013\doc\nft.aux)
+[4 <C:/NVPACK/OpenCV-2.4.5-Tegra-sdk-r2/cvl_2013/doc/badly2.jpg> <C:/NVPACK/Ope
+nCV-2.4.5-Tegra-sdk-r2/cvl_2013/doc/badly1.jpg> <C:/NVPACK/OpenCV-2.4.5-Tegra-s
+dk-r2/cvl_2013/doc/kalman.jpg>]
+(C:\NVPACK\OpenCV-2.4.5-Tegra-sdk-r2\cvl_2013\doc\nft.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 3061 strings out of 493921
- 50131 string characters out of 3144874
- 120702 words of memory out of 3000000
- 6361 multiletter control sequences out of 15000+200000
- 36971 words of font info for 72 fonts, out of 3000000 for 9000
+ 3014 strings out of 493921
+ 49398 string characters out of 3144874
+ 117694 words of memory out of 3000000
+ 6321 multiletter control sequences out of 15000+200000
+ 36456 words of font info for 70 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 36i,9n,38p,1174b,382s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,9n,38p,1400b,382s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Progra
-m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program 
-Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Fil
-es (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files 
-(x86)/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pfb><C:/Program Files (x86)/MiK
-TeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fon
-ts/type1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/u
-rw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/ut
-mri8a.pfb>
-Output written on nft.pdf (3 pages, 6276040 bytes).
+m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program 
+Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Fi
+les (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files
+ (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (
+x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86
+)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.
+9/fonts/type1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/ty
+pe1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/tim
+es/utmri8a.pfb>
+Output written on nft.pdf (4 pages, 6346451 bytes).
 PDF statistics:
- 50 PDF objects out of 1000 (max. 8388607)
+ 58 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 26 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 31 words of extra memory for PDF output out of 10000 (max. 10000000)
 
