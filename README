@@ -1,2 +1,13 @@
-First try
-sencond try
+Natural feature tracking for augmented reality
+
+-Setup 
+clone this repositiora into you opencv for android folder.
+
+-Project Build
+if you are importing this project into eclipse, it may be necessary to add the NDKROOT variable to the project environment.
+Afterwards issue a full rebuild with ndk-build -B from withi the path_to_project/src folder
+
+-Application usage
+Run the application on your android handset. first press the menu button and select 'capture'. The application is now ready to capture the inital image of a planar target, you can do so by tapping onto the screen once. The application will now start tracking this initial view.
+
+In order to track another image unfortunately you have to restart the apllication.

@@ -87,25 +87,6 @@ void detection::setup_initial_features(){
 	else if(raw_descriptors.size() >= 1){
 		initial_descriptors.push_back(raw_descriptors[0]);
 	}
-	else {
-		//TODO not used right now
-		initial_descriptors.reserve(2);
-		// match and filter
-		matcher.knnMatch( raw_descriptors[0], raw_descriptors[1], matches, 2 );
-		for( unsigned int i = 0; i < matches.size(); i++ )
-			{
-				cv::DMatch m1 = matches[i][0];
-				cv::DMatch m2 = matches[i][1];
-				if(m1.distance < 0.6* m2.distance){
-					//cv::Mat& v1, v2;
-					// TODO single feature extraction from descriptor matrix :/
-					//v1 = initial_descriptors[0];
-					//v1.push_back(m1.trainIdx);
-					//v2 = initial_descriptors[1];
-					//v2.push_back(m1.queryIdx);
-				}
-			}
-	}
 };
 
 
@@ -180,7 +161,7 @@ bool detection::detect(cv::Mat& img){
 		last_pts = current_pts;
 		img.copyTo(prev_img);
 
-		//redetection = false;
+		redetection = false;
 	}
 	else{
 		// no redetection requested
@@ -204,12 +185,12 @@ bool detection::detect(cv::Mat& img){
 				total_error += error[i];
 			}
 		}
-
-//		if(total_error/num_pts > 1.0){
-//			// bad detection
-//			skipped_frames++;
-//			return false;
-//		}
+		LOGD("klt error %d",total_error/num_pts);
+		if(total_error/num_pts > 2000){
+			// bad detection
+			skipped_frames++;
+			return false;
+		}
 		skipped_frames++;
 
 		pts_index = tmp_index;
