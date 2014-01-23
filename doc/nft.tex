@@ -9,6 +9,7 @@
 % create a shortcut to typeset table headings
 \newcommand\tabhead[1]{\small\textbf{#1}}
 
+
 \begin{document}
 \title{Natural Feature Detection for Augmented Reality}
 
@@ -21,7 +22,7 @@
 \maketitle
 
 \begin{abstract}
-The Abstract goes here
+This project explores the possibility of using natural feature tracking for augmented reality applications by removing the need for predefined patterns as basis for object tracking.
 \end{abstract}
 
 \section{Introduction}
@@ -30,10 +31,16 @@ With the proliferation of powerful mobile phones and their cameras augmented rea
 
 \section{Method}
 
-Our Application uses a simple combination of a feature detection \& extraction schema supplemented by a KLT tracker. In a first step the application acquires an initial image which should be sufficiently textured. We then do a feature extraction on this image as a starting point for the KLT tracking. As the KLT tracker is limited to  tracking feature points from one frame to the next it is only suitable for tracking already known feature points and not for recovery or detection of the target object. We therefore supply the application with a simple re-detection procedure. This is done by taking a frame and proceeding with a feature detection on it. The features are then directly matched with the ones from the initial image. While the KLT tracker is faster than a full feature detection, extraction, and matching cycle it is prone to loosing track of features and drifting over time. Our application therefore interlaces the KLT tracking with regular re-detection cycles when either the quality or the number of the tracked features drop below certain thresholds. From the matched points we then calculated a homography between between the original image and the the current camera frame, therefore obtaining a estimate for the current position of the original image in the current frame.  In the end this results in a fast and never the less robust tracking of the initial image.
+\begin{figure}
+	\includegraphics[width=\columnwidth]{overview.png}
+	\caption{Pipeline for frame processing}
+	\label{fig:overview}
+\end{figure}
+
+Our Application uses a simple combination of a feature detection \& extraction schema supplemented by a KLT tracker as depicted in fig\ref{fig:overview}. In a first step the application acquires an initial image which should be sufficiently textured. We then do a feature extraction on this image as a starting point for the KLT tracking. As the KLT tracker is limited to  tracking feature points from one frame to the next it is only suitable for tracking already known feature points and not for recovery or detection of the target object. We therefore supply the application with a simple re-detection procedure. This is done by taking a frame and proceeding with a feature detection on it. The features are then directly matched with the ones from the initial image. While the KLT tracker is faster than a full feature detection, extraction, and matching cycle it is prone to loosing track of features and drifting over time. Our application therefore interlaces the KLT tracking with regular re-detection cycles when either the quality or the number of the tracked features drop below certain thresholds. From the matched points we then calculated a homography between between the original image and the the current camera frame, therefore obtaining a estimate for the current position of the original image in the current frame.  In the end this results in a fast and never the less robust tracking of the initial image.
 
 \subsection{Feature Selection and Matching}
-In order to be used for our approach the features for the tracking and re-detection have to full-fill certain criteria. They have to be rotation and preferably be scaling invariant and they must be fast to compute. While the rotational invariance is a must the scaling invariant can be substituted with computing the same features on different scales on the image. Due to the relatively small number of features we are operating on the matching of those features can be computed with a straight forward brute force approach as this takes an insignificant time compared to the feature detection and extraction. As we are using the opencv library for this task our selection is limited to what is provided in the library. We have compared the following features detectors for their computational effort:
+In order to be used for our approach the features for the tracking and re-detection have to full-fill certain criteria. They have to be rotation and preferably be scaling invariant and they must be fast to compute. While the rotational invariance is a must the scaling invariant can be substituted with computing the same features on different scales on the image. Due to the relatively small number of features we are operating on the matching of those features can be computed with a straight forward brute force approach as this takes an insignificant time compared to the feature detection and extraction. As we are using the opencv library for this task our selection is limited to what is provided in the library, see \cite{web:ocvfeature}. We have compared the following features detectors for their computational effort:
 
 \begin{itemize}
 \item ORB 
@@ -65,14 +72,52 @@ A homography H relates two sets of points on a plane between two different view 
 \begin{equation}
 \left( \begin{array}{c} x \\ y \\ 1 \end{array} \right) = H  \times \left( \begin{array}{c} w*x' \\ w*y' \\ w \end{array} \right)
 \end{equation}
-$H$ is $3\times3$ matrix representing the change in rotation and translation of the viewpoint between the two sets of points. It can either be used to directly warp an image onto another, in our case the initial image of the target, or it can be decomposed into the aforementioned rotation and translation which can then be used for more elaborate AR applications such as rendering 3D objects on top of the target. 
+$H$ is a $3\times3$ matrix representing the change in rotation and translation of the viewpoint between the two sets of points. It can either be used to directly warp an image onto another, in our case the initial image of the target, or it can be decomposed into the aforementioned rotation and translation which can then be used for more elaborate AR applications such as rendering 3D objects on top of the target. 
 
 \section{Implementation}
 
-Our approach is implemented as an android application written mostly in c++ and utilizing the opencv library. The application framework itself is based on the android and opencv tutorial 2 for mixed processing, thereby providing the interface parts for communication between the java and c++ parts of the code. 
+Our approach is implemented as an android application written mostly in c++ and utilizing the opencv library \cite{web:ocvdocu}. The application framework itself is based on the android and opencv tutorial 2 for mixed processing, thereby providing the basic setup for the user interface, image acquisition, and template for the communication between the java and c++ parts of the code.
+\\
+\indent The java side of the code is only concerned with user interactions such as triggering the capture of the initial image and relaying the camera frames to our actual method implementation in c++. This is all contained in the file named $nftActivity.java$. This code is mainly adapted from the sample code on which it is based on.
+\\ 
+\indent On the c++ side we first have a small file $nftMain.cpp$ which contains the interface between the aforementioned java code and the core of our application. Next up is the file $nftApplication.cpp$ which contains the minimal control logic of our application. Finally the heavy lifting is done in the file $detection.cpp$. Besides organizational book keeping the actual work in there is done mainly by invoking opencv routines. We have the following calls to opencv functions:
+\begin{itemize}
+\item cv::ORB::detect for feature detection
+\item cv::ORB::compute for extracting feature descriptors
+\item cv::BFMatcher for brute force matching of feature descriptors
+\item cv::FLANNbasedMatcher as alternative to BFMatcher
+\item cv::calcOpticalFlowPyrLK as implementation of the KLT tracker
+\item cv::findHomography to calculate the homography between the current points and the points in the original image
+\end{itemize}
+As we are using only a small number of features, 250 or less, the brute force approach to matching does not require any significant processing time. 
+\\
+\indent As it stands now, our application is single threaded and does not take advantage of multi-core processors common in modern smartphones.
 
 \section{Results}
+\begin{figure*}[t]
+    \begin{minipage}[t]{0.33\textwidth}
+         \includegraphics[width=\columnwidth]{Screenshot_2014-01-21-23-51-46.png}
+        \caption{The original image.}
+        \label{fig:initial}
+    \end{minipage}
+    \hspace{0.0cm}
+    % Error.
+    \begin{minipage}[t]{0.33\textwidth}
+        \includegraphics[width=\columnwidth]{Screenshot_2014-01-21-22-59-52.png}
+        \caption{small rotation of target.}
+        \label{fig:rot}
+    \end{minipage}
+    \hspace{0.0cm}
+    % Selected blocks for compression with polynomials.
+    \begin{minipage}[t]{0.33\textwidth}
+        \includegraphics[width=\columnwidth]{Screenshot_2014-01-21-23-00-03.png}
+        \caption{Rotation plus small occlusion.}
+        \label{fig:rot_occl}
+    \end{minipage}
+    \hspace{0.0cm}
+\end{figure*}
 %Our results go here
+We have implemented an simple augmented reality application that takes the original image and overlays it onto the current frame. This servers as a direct way to observe the correctness of our implementation. See fig 2-4. Our current implementation achieves roughly 10 frames per second, a number that drops lower in the presence of motion blur and occlusions as in these cases instead of the fast KLT tracker we perform a full re-detection cycle. 
 
 \section{Problems and solutions}
 %problems and proposed solutions
@@ -290,6 +335,7 @@ We then fix our experiment of kalman filter with our application, but the result
 
 \appendix
 Codebase:\\\\
+Our code can be found here: \url{https://github.com/benj919/cvl_2013}. In order to build the project please clone this git repository into your opencv folder setup according to the tutorial session. It may be necessary to add the NDKBUILDROOT to the project setup in accordance with the same tutorial. Furthermore it is recommended to issue a full rebuild of the application using the "ndk-build -B" command.
 
 \appendix
 Work distribution:\\\\
@@ -299,16 +345,14 @@ Benjamin & Initial Framework \\
 & KLT usage \\
 & Homography estimation \\
 & Initial Visualization \\
-& Code for Runtime measurement\\
 \\
-Hongyi 
+Hongyi & Performance evaluation for features\\
 & Warped image visualization\\
-& Feature detection \\
-& Code and conduct of experiment\\
-& kalman filter\\
+& Kalman filter \\
 \\
 Both & Inlier ratio for homography \\
 & Feature detection \\
+& Code for Runtime measurements\\
 & Report\\
 \\
 \end{tabular} 
